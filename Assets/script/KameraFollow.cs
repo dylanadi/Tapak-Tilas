@@ -2,18 +2,24 @@ using UnityEngine;
 
 public class KameraFollow : MonoBehaviour
 {
-    public Transform target;
+    [Header("Fokus Target")]
+    public Transform target;          // Ini untuk Pion (diisi otomatis nanti)
+    public Transform targetSelection; // Tarik objek 'TitikTengah' ke sini di Inspector
+    public bool sedangMemilih = true; // Centang ini agar kamera fokus ke karakter saat start
 
-    [Header("Sudut Kamera")]
-    public float kemiringanKamera = 60f; // Sudut miring ke bawah
+    [Header("Posisi & Sudut")]
+    public float kemiringanKamera = 60f;
+    public float rotasiHorizontal = 45f;
 
     [Header("Zoom Settings")]
     public float zoomMin = 5f;
     public float zoomMax = 40f;
     public float tinggiSekarang = 15f;
 
-    [Header("Kontrol Geser")]
-    public float panSensitivity = 1.2f;
+    [Header("Kontrol Geser (Manual)")]
+    public float panSensitivity = 1.0f;
+
+    [Header("Transisi Fokus (Auto-Lock)")]
     public float kecepatanFokus = 10f;
 
     private Vector3 offsetPan = Vector3.zero;
@@ -21,59 +27,77 @@ public class KameraFollow : MonoBehaviour
 
     void Start()
     {
-        // Kunci rotasi agar selalu konsisten
-        transform.rotation = Quaternion.Euler(kemiringanKamera, 0, 0);
-        if (target) lastTargetPos = target.position;
+        // Inisialisasi posisi awal agar tidak lompat kaget
+        Transform targetAktif = sedangMemilih ? targetSelection : target;
+        if (targetAktif) lastTargetPos = targetAktif.position;
     }
 
     void Update()
     {
-        if (!target) return;
+        Transform targetAktif = sedangMemilih ? targetSelection : target;
+        if (!targetAktif) return;
 
-        // 1. ZOOM LOGIC
+        // 1. INPUT ZOOM
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         tinggiSekarang -= scroll * 12f;
         tinggiSekarang = Mathf.Clamp(tinggiSekarang, zoomMin, zoomMax);
 
-        // Hitung persentase zoom untuk kontrol geser
         float zoomPercent = (tinggiSekarang - zoomMin) / (zoomMax - zoomMin);
 
-        // 2. GESER MANUAL (Klik Kanan)
+        // 2. INPUT GESER MANUAL (Klik Kanan)
         if (Input.GetMouseButton(1))
         {
             float moveX = Input.GetAxis("Mouse X") * panSensitivity;
             float moveZ = Input.GetAxis("Mouse Y") * panSensitivity;
-            // Di Zoom Out, geser terasa lebih luas
-            offsetPan -= new Vector3(moveX, 0, moveZ) * (1f + zoomPercent * 2f);
+
+            Vector3 inputMouse = new Vector3(moveX, 0, moveZ);
+            Vector3 inputDisesuaikan = Quaternion.Euler(0, rotasiHorizontal, 0) * inputMouse;
+
+            offsetPan -= inputDisesuaikan * (1f + zoomPercent * 2f);
         }
 
-        // 3. AUTO-LOCK SAAT JALAN
-        if (Vector3.Distance(target.position, lastTargetPos) > 0.01f)
+        // 3. AUTO-LOCK: Reset geseran jika target bergerak (untuk Pion)
+        if (Vector3.Distance(targetAktif.position, lastTargetPos) > 0.01f)
         {
-            // Reset geseran tangan dengan cepat saat pion bergerak
             offsetPan = Vector3.Lerp(offsetPan, Vector3.zero, Time.deltaTime * kecepatanFokus);
         }
 
-        lastTargetPos = target.position;
+        lastTargetPos = targetAktif.position;
     }
 
     void LateUpdate()
     {
-        if (!target) return;
+        Transform targetAktif = sedangMemilih ? targetSelection : target;
+        if (!targetAktif) return;
 
-        // --- RUMUS MATEMATIKA AGAR PION DI TENGAH ---
-        // Kita butuh jarak mundur (Z) yang pas berdasarkan tinggi (Y) dan sudut (Rotation)
-        // Rumus: Z_offset = Tinggi / Tan(Sudut)
+        // Kunci Rotasi Diagonal
+        transform.rotation = Quaternion.Euler(kemiringanKamera, rotasiHorizontal, 0);
+
+        // Rumus Trigonometri untuk Jarak Mundur
         float angleRad = kemiringanKamera * Mathf.Deg2Rad;
-        float jarakMundurZ = tinggiSekarang / Mathf.Tan(angleRad);
+        float jarakMundurHorizontal = tinggiSekarang / Mathf.Tan(angleRad);
 
-        // Tentukan posisi dasar agar pion tepat di titik tengah layar
-        Vector3 posisiDasar = new Vector3(target.position.x, tinggiSekarang, target.position.z - jarakMundurZ);
+        // Hitung Arah Mundur Kamera
+        Vector3 arahMundurDiagonal = transform.rotation * Vector3.back;
+        arahMundurDiagonal.y = 0;
+        Vector3 posisiOffsetMundur = arahMundurDiagonal.normalized * jarakMundurHorizontal;
 
-        // Tambahkan offset manual hasil geser tangan
+        // Tentukan Posisi Akhir
+        Vector3 posisiDasar = targetAktif.position + posisiOffsetMundur + (Vector3.up * tinggiSekarang);
         Vector3 posisiTujuan = posisiDasar + offsetPan;
 
-        // Terapkan posisi (Gunakan Lerp cepat agar smooth tapi responsif)
+        // Gerakkan Kamera dengan Halus
         transform.position = Vector3.Lerp(transform.position, posisiTujuan, Time.deltaTime * kecepatanFokus);
+    }
+
+    /// <summary>
+    /// Panggil fungsi ini dari script lain untuk memindahkan kamera ke Pion.
+    /// Contoh: KameraFollow.SelesaiMemilih(objekPion.transform);
+    /// </summary>
+    public void SelesaiMemilih(Transform pionBaru)
+    {
+        target = pionBaru;
+        sedangMemilih = false;
+        offsetPan = Vector3.zero; // Reset geseran agar langsung fokus ke pion
     }
 }

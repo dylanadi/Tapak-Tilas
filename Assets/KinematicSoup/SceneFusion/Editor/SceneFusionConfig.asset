@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SceneFusionConfig
   m_EditorClassIdentifier: 
   Debug: 1
-  LastVersion: 0.0.0
+  LastVersion: 2.0.4
   ShowGettingStartedScreen: 1
   m_syncMaterials: 1
   m_syncPrefabs: 1
@@ -35,4 +35,4 @@ MonoBehaviour:
     m_level: 2
     LogHistorySize: 5
     m_verbose: 0
-  m_projectId: -1
+  m_projectId: 9865
