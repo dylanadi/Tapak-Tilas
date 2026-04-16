@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 
 [RequireComponent(typeof(PlayerData))]
-public class GerakPion : MonoBehaviour
+public class GerakPion : MonoBehaviourPun
 {
     [Header("Referensi")]
     public LineRenderer jalur;
@@ -16,8 +17,11 @@ public class GerakPion : MonoBehaviour
     public float goyangSpeed = 6f;
     public float goyangAmount = 6f;
 
-    [Header("Offset (Anti Nancep Tanah)")]
+    [Header("Offset")]
     public float yOffset = 0.5f;
+
+    [Header("Indicator (Punya Player Sendiri)")]
+    public GameObject indikatorMilik; // 🔥 ICON DI ATAS KEPALA
 
     private List<Vector3> pathPoints = new List<Vector3>();
     private bool sedangGerak = false;
@@ -35,12 +39,15 @@ public class GerakPion : MonoBehaviour
             return;
         }
 
+        // 🔥 Aktifkan indikator kalau ini milik player sendiri
+        if (indikatorMilik != null)
+        {
+            indikatorMilik.SetActive(photonView.IsMine);
+        }
+
         AmbilJalur();
     }
 
-    // =========================
-    // 🔥 AMBIL DATA JALUR
-    // =========================
     void AmbilJalur()
     {
         pathPoints.Clear();
@@ -54,10 +61,24 @@ public class GerakPion : MonoBehaviour
     }
 
     // =========================
-    // 🔥 MOVE KE NODE
+    // 🔥 MOVE KE NODE (SUDAH DI BATASI TURN + OWNERSHIP)
     // =========================
     public void MoveToNode(StopNode targetNode)
     {
+        // ❌ Bukan punya player ini
+        if (!photonView.IsMine)
+        {
+            Debug.Log("Bukan karakter kamu!");
+            return;
+        }
+
+        // ❌ Bukan giliran
+        if (!GameManager.Instance.IsMyTurn(playerData))
+        {
+            Debug.Log("Bukan giliran kamu!");
+            return;
+        }
+
         if (sedangGerak) return;
 
         if (targetNode.IsFull())
@@ -69,9 +90,6 @@ public class GerakPion : MonoBehaviour
         StartCoroutine(JalanKeNode(targetNode));
     }
 
-    // =========================
-    // 🔥 CORE GERAK
-    // =========================
     IEnumerator JalanKeNode(StopNode target)
     {
         sedangGerak = true;
@@ -93,14 +111,12 @@ public class GerakPion : MonoBehaviour
 
             while (Vector3.Distance(transform.position, tujuan) > 0.05f)
             {
-                // 🔥 MOVE
                 transform.position = Vector3.MoveTowards(
                     transform.position,
                     tujuan,
                     speed * Time.deltaTime
                 );
 
-                // 🔥 ROTASI + GOYANG
                 Vector3 arah = (tujuan - transform.position).normalized;
 
                 if (arah != Vector3.zero)
@@ -126,15 +142,12 @@ public class GerakPion : MonoBehaviour
             }
         }
 
-        // =========================
-        // 🔥 SAMPAI DI NODE
-        // =========================
+        // 🔥 SAMPAI
         transform.position = targetPos;
 
         currentNode = target;
         currentNode.AddPlayer(gameObject);
 
-        // 🔥 UPDATE NODE INDEX KE PLAYER DATA
         if (playerData != null)
         {
             playerData.currentNodeIndex = target.nodeID;
@@ -144,18 +157,12 @@ public class GerakPion : MonoBehaviour
 
         HandleNodeEvent(target);
 
-        // 🔥 UPDATE TURN SYSTEM
-        if (GameManager.Instance != null)
-        {
-            GameManager.Instance.UpdateTurn();
-        }
+        // 🔥 PINDAH GILIRAN
+        GameManager.Instance.NextTurn();
 
         sedangGerak = false;
     }
 
-    // =========================
-    // 🔍 CARI TITIK TERDEKAT DI JALUR
-    // =========================
     int CariIndexTerdekat(Vector3 posisi)
     {
         float jarakTerdekat = Mathf.Infinity;
@@ -175,183 +182,19 @@ public class GerakPion : MonoBehaviour
         return index;
     }
 
-    // =========================
-    // 🎯 EVENT NODE
-    // =========================
     void HandleNodeEvent(StopNode node)
     {
         switch (node.nodeID)
         {
-            case 0:
-                Debug.Log("Heal Area");
-                break;
-
-            case 1:
-                Debug.Log("Shop Area");
-                break;
-
-            case 2:
-                Debug.Log("Event Area");
-                break;
-
-            default:
-                Debug.Log("Node biasa");
-                break;
+            case 0: Debug.Log("Heal Area"); break;
+            case 1: Debug.Log("Shop Area"); break;
+            case 2: Debug.Log("Event Area"); break;
+            default: Debug.Log("Node biasa"); break;
         }
     }
 
-    // =========================
-    // 🔒 CEK STATUS
-    // =========================
     public bool IsMoving()
     {
         return sedangGerak;
     }
 }
-
-
-//using UnityEngine;
-//using System.Collections;
-//using System.Collections.Generic;
-
-//public class GerakPion : MonoBehaviour
-//{
-//    [Header("Referensi")]
-//    public LineRenderer jalur;
-
-//    [Header("Movement")]
-//    public float speed = 5f;
-//    public float rotasiSpeed = 10f;
-
-//    [Header("Setup Posisi (Anti-Mendelep)")]
-//    [Tooltip("Tambahkan nilai ini jika kaki pion tenggelam ke tanah")]
-//    public float yOffset = 0.5f; // 🔥 SESUAIKAN NILAI INI DI INSPECTOR
-
-//    private List<Vector3> pathPoints = new List<Vector3>();
-//    private bool sedangGerak = false;
-//    private StopNode currentNode;
-
-//    void Start()
-//    {
-//        AmbilJalur();
-//    }
-
-//    void AmbilJalur()
-//    {
-//        pathPoints.Clear();
-//        for (int i = 0; i < jalur.positionCount; i++)
-//        {
-//            // Ambil posisi dari LineRenderer
-//            Vector3 point = jalur.GetPosition(i);
-//            // Tambahkan offset Y agar saat "tracing" jalur, pion tetap di atas
-//            point.y += yOffset;
-//            pathPoints.Add(point);
-//        }
-//    }
-
-//    public void MoveToNode(StopNode targetNode)
-//    {
-//        if (sedangGerak) return;
-
-//        if (targetNode.IsFull())
-//        {
-//            Debug.Log("Node penuh!");
-//            return;
-//        }
-
-//        StartCoroutine(JalanKeNode(targetNode));
-//    }
-
-//    IEnumerator JalanKeNode(StopNode target)
-//    {
-//        sedangGerak = true;
-
-//        if (currentNode != null)
-//            currentNode.RemovePlayer(gameObject);
-
-//        int startIndex = CariIndexTerdekat(transform.position);
-
-//        // Target posisi node juga ditambah offset biar nggak nancep ke tanah di akhir
-//        Vector3 targetPosWithOffset = target.transform.position;
-//        targetPosWithOffset.y += yOffset;
-
-//        int targetIndex = CariIndexTerdekat(targetPosWithOffset);
-//        int step = (targetIndex > startIndex) ? 1 : -1;
-
-//        for (int i = startIndex; i != targetIndex; i += step)
-//        {
-//            Vector3 tujuan = pathPoints[i + step];
-
-//            while (Vector3.Distance(transform.position, tujuan) > 0.05f)
-//            {
-//                transform.position = Vector3.MoveTowards(
-//                    transform.position,
-//                    tujuan,
-//                    speed * Time.deltaTime
-//                );
-
-//                Vector3 arah = (tujuan - transform.position).normalized;
-
-//                if (arah != Vector3.zero)
-//                {
-//                    Quaternion rot = Quaternion.LookRotation(arah);
-//                    float goyang = Mathf.Sin(Time.time * 10f) * 10f;
-
-//                    Quaternion finalRot = Quaternion.Euler(
-//                        0,
-//                        rot.eulerAngles.y,
-//                        goyang
-//                    );
-
-//                    transform.rotation = Quaternion.Slerp(
-//                        transform.rotation,
-//                        finalRot,
-//                        Time.deltaTime * rotasiSpeed
-//                    );
-//                }
-//                yield return null;
-//            }
-//        }
-
-//        // --- FIX DI SINI ---
-//        // Sampai di node akhir dengan tetap menjaga ketinggian offset
-//        transform.position = targetPosWithOffset;
-
-//        currentNode = target;
-//        currentNode.AddPlayer(gameObject);
-
-//        Debug.Log("Berhenti di node ID: " + target.nodeID);
-//        HandleNodeEvent(target);
-
-//        sedangGerak = false;
-//    }
-
-//    int CariIndexTerdekat(Vector3 posisi)
-//    {
-//        float jarakTerdekat = Mathf.Infinity;
-//        int index = 0;
-
-//        for (int i = 0; i < pathPoints.Count; i++)
-//        {
-//            float jarak = Vector3.Distance(posisi, pathPoints[i]);
-//            if (jarak < jarakTerdekat)
-//            {
-//                jarakTerdekat = jarak;
-//                index = i;
-//            }
-//        }
-//        return index;
-//    }
-
-//    void HandleNodeEvent(StopNode node)
-//    {
-//        // ... (kode event kamu tetap sama)
-//        switch (node.nodeID)
-//        {
-//            case 0: Debug.Log("Heal Area"); break;
-//            case 1: Debug.Log("Shop Area"); break;
-//            case 2: Debug.Log("Event Area"); break;
-//            default: Debug.Log("Node biasa"); break;
-//        }
-//    }
-//}

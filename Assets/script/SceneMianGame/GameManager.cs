@@ -19,15 +19,21 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     [Header("Turn System")]
     public TurnUI turnUI;
+
     private List<PlayerData> allPlayers = new List<PlayerData>();
+    private int currentTurnIndex = 0;
+
+    private bool turnSystemReady = false;
 
     void Awake()
     {
         Instance = this;
+        Debug.Log("[GM] Awake");
     }
 
     void Start()
     {
+        Debug.Log("[GM] Start → mulai spawn system");
         StartCoroutine(WaitAndSpawn());
     }
 
@@ -36,18 +42,21 @@ public class GameManager : MonoBehaviourPunCallbacks
     // =========================
     IEnumerator WaitAndSpawn()
     {
+        Debug.Log("[GM] Menunggu CustomProperties...");
+
         while (!PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("KarakterPilihan"))
         {
-            Debug.Log("Menunggu data karakter...");
             yield return null;
         }
 
+        Debug.Log("[GM] Data karakter ditemukan");
+
         SpawnPlayer();
 
-        // kasih delay biar semua player ke-spawn dulu
-        yield return new WaitForSeconds(1f);
+        Debug.Log("[GM] Tunggu player lain spawn...");
+        yield return new WaitForSeconds(2f);
 
-        UpdateTurn();
+        SetupTurnSystem();
     }
 
     void SpawnPlayer()
@@ -56,13 +65,13 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         Vector3 spawnPos = GetSafeSpawnPosition();
 
-        GameObject player = PhotonNetwork.Instantiate(
+        Debug.Log("[GM] Spawn karakter ID: " + karakterID);
+
+        PhotonNetwork.Instantiate(
             characterPrefabs[karakterID].name,
             spawnPos,
             Quaternion.identity
         );
-
-        Debug.Log("Spawn karakter ID: " + karakterID);
     }
 
     Vector3 GetSafeSpawnPosition()
@@ -78,44 +87,141 @@ public class GameManager : MonoBehaviourPunCallbacks
             spawnCenter.position.z + rand.y + offset
         );
 
+        Debug.Log("[GM] Spawn position: " + pos);
+
         return pos;
     }
 
     // =========================
-    // 🔥 TURN SYSTEM
+    // 🔥 SETUP TURN AWAL
     // =========================
-    public void UpdateTurn()
+    void SetupTurnSystem()
     {
-        // ambil semua player di scene
-        allPlayers = FindObjectsOfType<PlayerData>()
-            .OrderBy(p => p.currentNodeIndex)
-            .ToList();
-
-        // update UI
-        if (turnUI != null)
+        if (turnSystemReady)
         {
-            turnUI.UpdateUI(allPlayers);
+            Debug.LogWarning("[GM] Turn system sudah pernah setup!");
+            return;
         }
 
+        allPlayers = FindObjectsOfType<PlayerData>().ToList();
+
+        Debug.Log("[GM] Jumlah player ditemukan: " + allPlayers.Count);
+
+        if (allPlayers.Count == 0)
+        {
+            Debug.LogError("[GM] ❌ Tidak ada PlayerData di scene!");
+            return;
+        }
+
+        // 🔥 RANDOM URUTAN
+        allPlayers = allPlayers.OrderBy(x => Random.value).ToList();
+
+        currentTurnIndex = 0;
+        turnSystemReady = true;
+
+        Debug.Log("[GM] ✅ TURN DIACAK!");
         DebugTurn();
+
+        UpdateUI();
     }
 
+    // =========================
+    // 🔥 CEK GILIRAN
+    // =========================
+    public bool IsMyTurn(PlayerData player)
+    {
+        if (!turnSystemReady)
+        {
+            Debug.Log("[GM] Turn belum siap");
+            return false;
+        }
+
+        if (allPlayers.Count == 0)
+            return false;
+
+        bool result = allPlayers[currentTurnIndex] == player;
+
+        if (result)
+            Debug.Log("[GM] ✅ INI GILIRANMU");
+        else
+            Debug.Log("[GM] ❌ BUKAN GILIRANMU");
+
+        return result;
+    }
+
+    // =========================
+    // 🔥 PINDAH GILIRAN
+    // =========================
+    public void NextTurn()
+    {
+        Debug.Log("[GM] 🔥 NEXT TURN DIPANGGIL | Frame: " + Time.frameCount);
+
+        if (!turnSystemReady)
+        {
+            Debug.LogWarning("[GM] Turn system belum ready!");
+            return;
+        }
+
+        if (allPlayers.Count == 0)
+        {
+            Debug.LogError("[GM] Player kosong!");
+            return;
+        }
+
+        PlayerData pemainSelesai = allPlayers[currentTurnIndex];
+
+        Debug.Log("[GM] Player selesai: " + pemainSelesai.playerName);
+
+        // pindah ke belakang
+        allPlayers.RemoveAt(currentTurnIndex);
+        allPlayers.Add(pemainSelesai);
+
+        currentTurnIndex = 0;
+
+        Debug.Log("[GM] ✅ TURN BERPINDAH");
+        DebugTurn();
+
+        UpdateUI();
+    }
+
+    // =========================
+    // 🔥 UI UPDATE
+    // =========================
+    void UpdateUI()
+    {
+        if (turnUI == null)
+        {
+            Debug.LogWarning("[GM] TurnUI belum di assign!");
+            return;
+        }
+
+        Debug.Log("[GM] 🔄 Update UI");
+
+        turnUI.UpdateUI(allPlayers);
+    }
+
+    // =========================
+    // 🔥 GET PLAYER SEKARANG
+    // =========================
     public PlayerData GetCurrentPlayer()
     {
-        if (allPlayers.Count == 0) return null;
+        if (!turnSystemReady || allPlayers.Count == 0)
+            return null;
 
-        // paling belakang = index 0
-        return allPlayers[0];
+        return allPlayers[currentTurnIndex];
     }
 
+    // =========================
+    // 🔥 DEBUG TURN
+    // =========================
     void DebugTurn()
     {
         Debug.Log("=== TURN ORDER ===");
 
         for (int i = 0; i < allPlayers.Count; i++)
         {
-            Debug.Log(i + " : " + allPlayers[i].name +
-                " (Node: " + allPlayers[i].currentNodeIndex + ")");
+            string status = (i == 0) ? " <-- GILIRAN" : "";
+            Debug.Log(i + " : " + allPlayers[i].playerName + status);
         }
     }
 }

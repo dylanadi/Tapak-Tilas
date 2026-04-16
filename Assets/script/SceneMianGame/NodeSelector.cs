@@ -1,13 +1,38 @@
-using UnityEngine;
+﻿using UnityEngine;
+using Photon.Pun;
 
 public class NodeSelector : MonoBehaviour
 {
-    public GerakPion player;
+    private GerakPion player;
+
+    void Start()
+    {
+        // 🔥 Cari player milik sendiri
+        GerakPion[] semuaPlayer = FindObjectsOfType<GerakPion>();
+
+        foreach (var p in semuaPlayer)
+        {
+            if (p.GetComponent<PhotonView>().IsMine)
+            {
+                player = p;
+                break;
+            }
+        }
+
+        if (player == null)
+        {
+            Debug.LogError("Player milik sendiri tidak ditemukan!");
+        }
+    }
 
     void Update()
     {
+        if (player == null) return;
+
         if (Input.GetMouseButtonDown(0))
         {
+            if (Camera.main == null) return;
+
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
             if (Physics.Raycast(ray, out RaycastHit hit))

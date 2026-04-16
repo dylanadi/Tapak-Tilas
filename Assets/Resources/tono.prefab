@@ -69,6 +69,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: bac4091a8bd8990418458f5063534286, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8095088128031935635}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: bac4091a8bd8990418458f5063534286, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1828850342066492594}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: bac4091a8bd8990418458f5063534286, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6374307722751407984}
   m_SourcePrefab: {fileID: 100100000, guid: bac4091a8bd8990418458f5063534286, type: 3}
 --- !u!1 &354477127404763694 stripped
 GameObject:
@@ -133,3 +139,38 @@ MonoBehaviour:
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!114 &1828850342066492594
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 354477127404763694}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edeb90ab0425cdf4fbf5b09c5b61c392, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerData
+  playerName: tono
+  actorNumber: 0
+  characterID: 0
+  currentNodeIndex: -1
+--- !u!114 &6374307722751407984
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 354477127404763694}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 667eaae64ae7b8d4e86e7fd27bd02171, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GerakPion
+  jalur: {fileID: 8917722609918957552, guid: 68ca57b6106eae44e959e4798fb45e88, type: 3}
+  speed: 5
+  rotasiSpeed: 10
+  goyangSpeed: 6
+  goyangAmount: 6
+  yOffset: 0.5
+  indikatorMilik: {fileID: 483675038047157445, guid: c7122e23e68562d48a6c5500041e9104, type: 3}

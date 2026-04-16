@@ -69,6 +69,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 753d26f1511a6b2408c4338596e92c0c, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5269872623050944683}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 753d26f1511a6b2408c4338596e92c0c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1189998721993667622}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 753d26f1511a6b2408c4338596e92c0c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -5682727753473551706}
   m_SourcePrefab: {fileID: 100100000, guid: 753d26f1511a6b2408c4338596e92c0c, type: 3}
 --- !u!1 &186524776322445914 stripped
 GameObject:
@@ -133,3 +139,38 @@ MonoBehaviour:
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!114 &1189998721993667622
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 186524776322445914}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edeb90ab0425cdf4fbf5b09c5b61c392, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerData
+  playerName: rizal
+  actorNumber: 0
+  characterID: 0
+  currentNodeIndex: -1
+--- !u!114 &-5682727753473551706
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 186524776322445914}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 667eaae64ae7b8d4e86e7fd27bd02171, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GerakPion
+  jalur: {fileID: 8917722609918957552, guid: 68ca57b6106eae44e959e4798fb45e88, type: 3}
+  speed: 5
+  rotasiSpeed: 10
+  goyangSpeed: 6
+  goyangAmount: 6
+  yOffset: 0.5
+  indikatorMilik: {fileID: 483675038047157445, guid: c7122e23e68562d48a6c5500041e9104, type: 3}
