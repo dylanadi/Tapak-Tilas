@@ -19,13 +19,20 @@ public class PlayerData : MonoBehaviourPun
     }
 
     // =============================
-    // 🔥 TUNGGU DATA PHOTON MASUK
+    // 🔥 TUNGGU DATA PHOTON MASUK DARI PEMILIK ASLI
     // =============================
     IEnumerator WaitForData()
     {
-        while (!PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("KarakterPilihan"))
+        // 1. Tunggu sampai karakter ini diakui punya pemilik di server
+        while (photonView.Owner == null)
         {
-            Debug.Log("Menunggu data karakter...");
+            yield return null;
+        }
+
+        // 2. Tunggu sampai pemilik karakter ini punya data "KarakterPilihan"
+        while (!photonView.Owner.CustomProperties.ContainsKey("KarakterPilihan"))
+        {
+            Debug.Log("Menunggu data karakter dari " + photonView.Owner.NickName + "...");
             yield return null;
         }
 
@@ -33,23 +40,27 @@ public class PlayerData : MonoBehaviourPun
     }
 
     // =============================
-    // SET DATA PLAYER
+    // SET DATA PLAYER (SINKRON MULTIPLAYER)
     // =============================
     void SetupData()
     {
-        if (!photonView.IsMine) return; // ✅ penting banget
+        // ❌ HAPUS: if (!photonView.IsMine) return;
+        // Kita biarkan script jalan agar layar kita bisa nge-load data teman.
 
-        playerName = PhotonNetwork.NickName;
-        actorNumber = PhotonNetwork.LocalPlayer.ActorNumber;
+        // ✅ KUNCI MULTIPLAYER: Ambil data dari Pemilik (Owner), bukan LocalPlayer
+        Player pemilik = photonView.Owner;
 
-        if (PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("KarakterPilihan"))
+        playerName = pemilik.NickName;
+        actorNumber = pemilik.ActorNumber;
+
+        if (pemilik.CustomProperties.ContainsKey("KarakterPilihan"))
         {
-            characterID = (int)PhotonNetwork.LocalPlayer.CustomProperties["KarakterPilihan"];
-            Debug.Log("Karakter berhasil di-set: " + characterID);
+            characterID = (int)pemilik.CustomProperties["KarakterPilihan"];
+            Debug.Log($"[PlayerData] Karakter berhasil di-set! {playerName} memakai ID: {characterID}");
         }
         else
         {
-            Debug.LogError("Karakter belum dipilih!");
+            Debug.LogError($"[PlayerData] Karakter belum dipilih untuk {playerName}!");
         }
     }
 
