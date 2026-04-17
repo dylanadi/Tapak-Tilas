@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Photon.Pun;
+using System.Linq; // 🔥 Wajib ditambah untuk fitur pencarian Node
 
 [RequireComponent(typeof(PlayerData))]
 public class GerakPion : MonoBehaviourPun
@@ -21,7 +22,7 @@ public class GerakPion : MonoBehaviourPun
     public float yOffset = 0.5f;
 
     [Header("Indicator (Punya Player Sendiri)")]
-    public GameObject indikatorMilik; // 🔥 ICON DI ATAS KEPALA
+    public GameObject indikatorMilik;
 
     private List<Vector3> pathPoints = new List<Vector3>();
     private bool sedangGerak = false;
@@ -33,13 +34,18 @@ public class GerakPion : MonoBehaviourPun
     {
         playerData = GetComponent<PlayerData>();
 
+        // 🔥 FIX MULTIPLAYER: Saat prefab di-spawn lewat Photon, referensi Inspector sering hilang.
+        // Jadi kita paksa cari LineRenderer di scene kalau kosong.
         if (jalur == null)
         {
-            Debug.LogError("Jalur belum diisi!");
-            return;
+            jalur = FindObjectOfType<LineRenderer>();
+            if (jalur == null)
+            {
+                Debug.LogError("[GerakPion] Jalur (LineRenderer) tidak ditemukan di Scene!");
+                return;
+            }
         }
 
-        // 🔥 Aktifkan indikator kalau ini milik player sendiri
         if (indikatorMilik != null)
         {
             indikatorMilik.SetActive(photonView.IsMine);
@@ -61,19 +67,17 @@ public class GerakPion : MonoBehaviourPun
     }
 
     // =========================
-    // 🔥 MOVE KE NODE (SUDAH DI BATASI TURN + OWNERSHIP)
+    // 🔥 PERINTAH JALAN (DIPANGGIL LOKAL OLEH PEMILIK)
     // =========================
     public void MoveToNode(StopNode targetNode)
     {
-        // ❌ Bukan punya player ini
         if (!photonView.IsMine)
         {
             Debug.Log("Bukan karakter kamu!");
             return;
         }
 
-        // ❌ Bukan giliran
-        if (!GameManager.Instance.IsMyTurn(playerData))
+        if (GameManager.Instance != null && !GameManager.Instance.IsMyTurn(playerData))
         {
             Debug.Log("Bukan giliran kamu!");
             return;
@@ -87,7 +91,31 @@ public class GerakPion : MonoBehaviourPun
             return;
         }
 
-        StartCoroutine(JalanKeNode(targetNode));
+        // 🔥 KUNCI MULTIPLAYER:
+        // Kita JANGAN langsung jalan. Kita suruh Photon kirim pesan ke SEMUA ORANG
+        // "Woi, karakter ini mau jalan ke Node ID sekian!"
+        // Catatan: Kita cuma bisa kirim Angka (ID), gak bisa kirim objek StopNode lewat internet.
+        photonView.RPC("RPC_GerakKeNode", RpcTarget.AllViaServer, targetNode.nodeID);
+    }
+
+    // =========================
+    // 🔥 RPC (DIJALANKAN DI SEMUA LAPTOP)
+    // =========================
+    [PunRPC]
+    void RPC_GerakKeNode(int targetNodeID)
+    {
+        // Cari node di scene berdasarkan ID yang dikirim
+        StopNode target = FindObjectsOfType<StopNode>().FirstOrDefault(n => n.nodeID == targetNodeID);
+
+        if (target != null)
+        {
+            // Semua laptop sekarang menjalankan animasi jalan secara bersamaan
+            StartCoroutine(JalanKeNode(target));
+        }
+        else
+        {
+            Debug.LogError($"[GerakPion] Node dengan ID {targetNodeID} tidak ditemukan di scene!");
+        }
     }
 
     IEnumerator JalanKeNode(StopNode target)
@@ -122,14 +150,8 @@ public class GerakPion : MonoBehaviourPun
                 if (arah != Vector3.zero)
                 {
                     Quaternion rot = Quaternion.LookRotation(arah);
-
                     float goyang = Mathf.Sin(Time.time * goyangSpeed) * goyangAmount;
-
-                    Quaternion finalRot = Quaternion.Euler(
-                        0,
-                        rot.eulerAngles.y,
-                        goyang
-                    );
+                    Quaternion finalRot = Quaternion.Euler(0, rot.eulerAngles.y, goyang);
 
                     transform.rotation = Quaternion.Slerp(
                         transform.rotation,
@@ -142,9 +164,8 @@ public class GerakPion : MonoBehaviourPun
             }
         }
 
-        // 🔥 SAMPAI
+        // 🔥 SAMPAI DI TUJUAN
         transform.position = targetPos;
-
         currentNode = target;
         currentNode.AddPlayer(gameObject);
 
@@ -154,11 +175,22 @@ public class GerakPion : MonoBehaviourPun
         }
 
         Debug.Log("Berhenti di node ID: " + target.nodeID);
-
         HandleNodeEvent(target);
 
-        // 🔥 PINDAH GILIRAN
-        GameManager.Instance.NextTurn();
+        // 🔥 FIX NULL REFERENCE & DOUBLE TURN ERROR:
+        // Cuma pemilik karakter asli yang boleh lapor ke GameManager buat ganti giliran.
+        // Temannya yang cuma nonton di layar sebelah gak boleh ikut-ikutan manggil NextTurn.
+        if (photonView.IsMine)
+        {
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.NextTurn();
+            }
+            else
+            {
+                Debug.LogError("[GerakPion] NullReference: GameManager.Instance tidak ditemukan!");
+            }
+        }
 
         sedangGerak = false;
     }
@@ -178,7 +210,6 @@ public class GerakPion : MonoBehaviourPun
                 index = i;
             }
         }
-
         return index;
     }
 

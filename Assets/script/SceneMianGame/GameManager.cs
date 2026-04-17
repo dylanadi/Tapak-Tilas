@@ -103,7 +103,11 @@ public class GameManager : MonoBehaviourPunCallbacks
             return;
         }
 
-        allPlayers = FindObjectsOfType<PlayerData>().ToList();
+        // 🔥 FILTER ANTI 9 PLAYER + URUTAN SINKRON
+        allPlayers = FindObjectsOfType<PlayerData>()
+            .Where(p => p.photonView != null && p.photonView.Owner != null)
+            .OrderBy(p => p.photonView.Owner.ActorNumber)
+            .ToList();
 
         Debug.Log("[GM] Jumlah player ditemukan: " + allPlayers.Count);
 
@@ -113,13 +117,10 @@ public class GameManager : MonoBehaviourPunCallbacks
             return;
         }
 
-        // 🔥 RANDOM URUTAN
-        allPlayers = allPlayers.OrderBy(x => Random.value).ToList();
-
         currentTurnIndex = 0;
         turnSystemReady = true;
 
-        Debug.Log("[GM] ✅ TURN DIACAK!");
+        Debug.Log("[GM] ✅ TURN DIACAK (SINKRON)!");
         DebugTurn();
 
         UpdateUI();
@@ -150,7 +151,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
 
     // =========================
-    // 🔥 PINDAH GILIRAN
+    // 🔥 PINDAH GILIRAN (FITUR MULTIPLAYER)
     // =========================
     public void NextTurn()
     {
@@ -168,6 +169,13 @@ public class GameManager : MonoBehaviourPunCallbacks
             return;
         }
 
+        // Panggil fungsi pindah giliran di semua client yang terkoneksi
+        photonView.RPC("RPC_NextTurn", RpcTarget.AllViaServer);
+    }
+
+    [PunRPC]
+    void RPC_NextTurn()
+    {
         PlayerData pemainSelesai = allPlayers[currentTurnIndex];
 
         Debug.Log("[GM] Player selesai: " + pemainSelesai.playerName);
@@ -178,7 +186,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         currentTurnIndex = 0;
 
-        Debug.Log("[GM] ✅ TURN BERPINDAH");
+        Debug.Log("[GM] ✅ TURN BERPINDAH (SYNCED)");
         DebugTurn();
 
         UpdateUI();
