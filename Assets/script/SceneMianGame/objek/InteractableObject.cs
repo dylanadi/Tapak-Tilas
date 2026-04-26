@@ -4,7 +4,17 @@ using System.Linq;
 
 public class InteractableObject : MonoBehaviour
 {
-    public enum ObjectType { Landmark, Warung, Misteri, Finish }
+    public enum ObjectType 
+    { 
+        Ketapang, 
+        Ijen, 
+        PulauMerah, 
+        Rajinan, 
+        Pasar, 
+        Hujan, 
+        Kharisma, 
+        Warisan 
+    }
 
     [Header("Konfigurasi Node")]
     public int targetNodeID; 
@@ -64,13 +74,20 @@ public class InteractableObject : MonoBehaviour
         if (currentTanya == null && tanyaPrefab != null)
         {
             Vector3 spawnPos = transform.position + tanyaOffset;
-            currentTanya = Instantiate(tanyaPrefab, spawnPos, Quaternion.identity, transform);
             
-            // Tambahkan helper klik
+            // 🔥 FIX SCALE: Spawn tanpa parent dulu biar scale gak rusak
+            currentTanya = Instantiate(tanyaPrefab, spawnPos, Quaternion.identity);
+            
+            // 🔥 Paksa scale balik ke ukuran asli (1,1,1)
+            currentTanya.transform.localScale = Vector3.one;
+            
+            // 🔥 Baru masukkan ke dalam parent (objek map)
+            currentTanya.transform.SetParent(transform);
+            
             TandaTanyaInteraction ttInteraction = currentTanya.AddComponent<TandaTanyaInteraction>();
             ttInteraction.pesanPopup = infoText;
             
-            Debug.Log("[GM-Interact] Tanda tanya berhasil muncul!");
+            Debug.Log("[GM-Interact] Tanda tanya muncul dengan skala normal!");
         }
     }
 
@@ -100,23 +117,15 @@ public class InteractableObject : MonoBehaviour
     }
 }
 
-// --- SCRIPT HELPER DENGAN LOG TAMBAHAN ---
 public class TandaTanyaInteraction : MonoBehaviour
 {
     public string pesanPopup;
 
     void OnMouseDown()
     {
-        Debug.Log($"[GM-TandaTanya] KLIK TERDETEKSI pada Tanda Tanya!");
-
         if (PopupManager.Instance != null)
         {
-            Debug.Log("[GM-TandaTanya] Memanggil PopupManager.ShowPopup...");
             PopupManager.Instance.ShowPopup(pesanPopup);
-        }
-        else
-        {
-            Debug.LogError("[GM-TandaTanya] PopupManager.Instance NULL! Pastikan ada script PopupManager di scene.");
         }
     }
 

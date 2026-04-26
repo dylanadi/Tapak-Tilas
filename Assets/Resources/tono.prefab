@@ -176,7 +176,7 @@ MonoBehaviour:
   goyangSpeed: 6
   goyangAmount: 6
   yOffset: 0.5
-  indikatorMilik: {fileID: 483675038047157445, guid: c7122e23e68562d48a6c5500041e9104, type: 3}
+  indikatorMilik: {fileID: 0}
 --- !u!114 &5449189336259077113
 MonoBehaviour:
   m_ObjectHideFlags: 0

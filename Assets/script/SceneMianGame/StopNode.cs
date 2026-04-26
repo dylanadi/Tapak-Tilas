@@ -4,6 +4,7 @@ using System.Collections.Generic;
 public class StopNode : MonoBehaviour
 {
     public int nodeID;
+    public InteractableObject.ObjectType jenisNode;
     public int capacity = 1;
 
     public List<GameObject> playersInside = new List<GameObject>();

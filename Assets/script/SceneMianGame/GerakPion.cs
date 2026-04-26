@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Photon.Pun;
-using System.Linq; // 🔥 Wajib ditambah untuk fitur pencarian Node
+using System.Linq;
 
 [RequireComponent(typeof(PlayerData))]
 public class GerakPion : MonoBehaviourPun
@@ -35,7 +35,6 @@ public class GerakPion : MonoBehaviourPun
         playerData = GetComponent<PlayerData>();
 
         // 🔥 FIX MULTIPLAYER: Saat prefab di-spawn lewat Photon, referensi Inspector sering hilang.
-        // Jadi kita paksa cari LineRenderer di scene kalau kosong.
         if (jalur == null)
         {
             jalur = FindObjectOfType<LineRenderer>();
@@ -91,10 +90,7 @@ public class GerakPion : MonoBehaviourPun
             return;
         }
 
-        // 🔥 KUNCI MULTIPLAYER:
         // Kita JANGAN langsung jalan. Kita suruh Photon kirim pesan ke SEMUA ORANG
-        // "Woi, karakter ini mau jalan ke Node ID sekian!"
-        // Catatan: Kita cuma bisa kirim Angka (ID), gak bisa kirim objek StopNode lewat internet.
         photonView.RPC("RPC_GerakKeNode", RpcTarget.AllViaServer, targetNode.nodeID);
     }
 
@@ -104,12 +100,12 @@ public class GerakPion : MonoBehaviourPun
     [PunRPC]
     void RPC_GerakKeNode(int targetNodeID)
     {
-        // Cari node di scene berdasarkan ID yang dikirim
         StopNode target = FindObjectsOfType<StopNode>().FirstOrDefault(n => n.nodeID == targetNodeID);
 
         if (target != null)
         {
-            // Semua laptop sekarang menjalankan animasi jalan secara bersamaan
+            // Pastikan coroutine lama stop dulu biar gak bentrok
+            StopAllCoroutines();
             StartCoroutine(JalanKeNode(target));
         }
         else
@@ -122,6 +118,9 @@ public class GerakPion : MonoBehaviourPun
     {
         sedangGerak = true;
 
+        // Refresh jalur jaga-jaga kalau ada perubahan
+        AmbilJalur();
+
         if (currentNode != null)
             currentNode.RemovePlayer(gameObject);
 
@@ -133,39 +132,76 @@ public class GerakPion : MonoBehaviourPun
         int targetIndex = CariIndexTerdekat(targetPos);
         int step = (targetIndex > startIndex) ? 1 : -1;
 
+        // =========================================================
+        // 🔥 1. JALAN KE TITIK GARIS TERDEKAT DULU (MENCARI JALUR)
+        // =========================================================
+        Vector3 titikMasukGaris = pathPoints[startIndex];
+        while (Vector3.Distance(transform.position, titikMasukGaris) > 0.05f)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, titikMasukGaris, speed * Time.deltaTime);
+
+            Vector3 arah = titikMasukGaris - transform.position;
+            arah.y = 0;
+            if (arah.magnitude > 0.01f)
+            {
+                Quaternion rot = Quaternion.LookRotation(arah);
+                float goyang = Mathf.Sin(Time.time * goyangSpeed) * goyangAmount;
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(0, rot.eulerAngles.y, goyang), Time.deltaTime * rotasiSpeed);
+            }
+            yield return null;
+        }
+
+        // =========================================================
+        // 🔥 2. MENYUSURI GARIS (KODE ASLI KAMU)
+        // =========================================================
         for (int i = startIndex; i != targetIndex; i += step)
         {
-            Vector3 tujuan = pathPoints[i + step];
+            // Pengaman index biar gak error
+            int nextIndex = Mathf.Clamp(i + step, 0, pathPoints.Count - 1);
+            Vector3 tujuan = pathPoints[nextIndex];
 
             while (Vector3.Distance(transform.position, tujuan) > 0.05f)
             {
-                transform.position = Vector3.MoveTowards(
-                    transform.position,
-                    tujuan,
-                    speed * Time.deltaTime
-                );
+                transform.position = Vector3.MoveTowards(transform.position, tujuan, speed * Time.deltaTime);
 
-                Vector3 arah = (tujuan - transform.position).normalized;
+                Vector3 arah = tujuan - transform.position;
+                arah.y = 0; // Fix biar badan gak nunduk
 
-                if (arah != Vector3.zero)
+                if (arah.magnitude > 0.01f)
                 {
                     Quaternion rot = Quaternion.LookRotation(arah);
                     float goyang = Mathf.Sin(Time.time * goyangSpeed) * goyangAmount;
                     Quaternion finalRot = Quaternion.Euler(0, rot.eulerAngles.y, goyang);
 
-                    transform.rotation = Quaternion.Slerp(
-                        transform.rotation,
-                        finalRot,
-                        Time.deltaTime * rotasiSpeed
-                    );
+                    transform.rotation = Quaternion.Slerp(transform.rotation, finalRot, Time.deltaTime * rotasiSpeed);
                 }
 
                 yield return null;
             }
         }
 
-        // 🔥 SAMPAI DI TUJUAN
+        // =========================================================
+        // 🔥 3. JALAN DARI UJUNG GARIS MENUJU TITIK TENGAH NODE
+        // =========================================================
+        while (Vector3.Distance(transform.position, targetPos) > 0.05f)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, targetPos, speed * Time.deltaTime);
+
+            Vector3 arahAkhir = targetPos - transform.position;
+            arahAkhir.y = 0;
+            if (arahAkhir.magnitude > 0.01f)
+            {
+                Quaternion rot = Quaternion.LookRotation(arahAkhir);
+                float goyang = Mathf.Sin(Time.time * goyangSpeed) * goyangAmount;
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(0, rot.eulerAngles.y, goyang), Time.deltaTime * rotasiSpeed);
+            }
+            yield return null;
+        }
+
+        // 🔥 SAMPAI DI TUJUAN PERSIS
         transform.position = targetPos;
+        transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0); // Berdiri tegak
+
         currentNode = target;
         currentNode.AddPlayer(gameObject);
 
@@ -178,8 +214,6 @@ public class GerakPion : MonoBehaviourPun
         HandleNodeEvent(target);
 
         // 🔥 FIX NULL REFERENCE & DOUBLE TURN ERROR:
-        // Cuma pemilik karakter asli yang boleh lapor ke GameManager buat ganti giliran.
-        // Temannya yang cuma nonton di layar sebelah gak boleh ikut-ikutan manggil NextTurn.
         if (photonView.IsMine)
         {
             if (GameManager.Instance != null)
@@ -215,12 +249,33 @@ public class GerakPion : MonoBehaviourPun
 
     void HandleNodeEvent(StopNode node)
     {
-        switch (node.nodeID)
+        // Cek jenis objek yang ada di Node tersebut
+        switch (node.jenisNode)
         {
-            case 0: Debug.Log("Heal Area"); break;
-            case 1: Debug.Log("Shop Area"); break;
-            case 2: Debug.Log("Event Area"); break;
-            default: Debug.Log("Node biasa"); break;
+            case InteractableObject.ObjectType.Ketapang:
+                Debug.Log("Menjalankan Fungsi Panorama Ketapang...");
+                // Panggil fungsi khusus Ketapang di sini
+                break;
+
+            case InteractableObject.ObjectType.Ijen:
+                Debug.Log("Menjalankan Fungsi Panorama Ijen...");
+                // Misal: Munculkan popup info kawah ijen
+                break;
+
+            case InteractableObject.ObjectType.Pasar:
+                Debug.Log("Menjalankan Fungsi Pasar...");
+                // Misal: Buka UI Toko Jajanan BWI
+                break;
+
+            case InteractableObject.ObjectType.Hujan:
+                Debug.Log("Menjalankan Fungsi Hujan...");
+                // Misal: Kurangi movement player berikutnya
+                break;
+
+            // Tambahkan case lainnya sesuai list 8 kategori kamu
+            default:
+                Debug.Log("Berhenti di Node biasa.");
+                break;
         }
     }
 
