@@ -2,6 +2,9 @@
 
 public class KameraFollow : MonoBehaviour
 {
+    // 🔥 INSTANCE: Biar bisa dipanggil dari UIGenerator tanpa perlu drag-and-drop
+    public static KameraFollow Instance;
+
     [Header("Fokus Target")]
     [Tooltip("Tarik objek TitikTengah map ke sini sebagai cadangan jika player belum spawn")]
     public Transform targetSelection;
@@ -27,6 +30,15 @@ public class KameraFollow : MonoBehaviour
     private Vector3 lastTargetPos;
     private Transform targetOtomatis;
 
+    void Awake()
+    {
+        // Setup Instance pas game baru mulai
+        if (Instance == null)
+            Instance = this;
+        else
+            Destroy(gameObject);
+    }
+
     void Start()
     {
         // Langsung cari target pas awal game
@@ -51,10 +63,10 @@ public class KameraFollow : MonoBehaviour
         // 2. LOGIKA AUTO-ZOOM & AUTO-FOLLOW (PAS JALAN)
         if (Vector3.Distance(targetOtomatis.position, lastTargetPos) > 0.01f)
         {
-            // 🔥 Lerp ketinggian ke 13.6 secara halus saat bergerak
+            // Lerp ketinggian ke 13.6 secara halus saat bergerak
             tinggiSekarang = Mathf.Lerp(tinggiSekarang, tinggiSaatJalan, Time.deltaTime * kecepatanFokus);
 
-            // 🔥 Reset geseran manual agar kamera kembali mengunci ke tengah karakter
+            // Reset geseran manual agar kamera kembali mengunci ke tengah karakter
             offsetPan = Vector3.Lerp(offsetPan, Vector3.zero, Time.deltaTime * kecepatanFokus);
         }
 
@@ -116,6 +128,24 @@ public class KameraFollow : MonoBehaviour
         if (targetSelection != null)
         {
             targetOtomatis = targetSelection;
+        }
+    }
+
+    // ==========================================
+    // 🔥 FUNGSI BARU UNTUK UI NAVIGASI BAWAH
+    // ==========================================
+    public void FokusKePosisi(Vector3 posisiTujuanFokus)
+    {
+        if (targetOtomatis != null)
+        {
+            // Hitung selisih jarak dari target saat ini (player) ke titik Objek Map (Pasar/Patung/dll)
+            Vector3 arahGeser = posisiTujuanFokus - targetOtomatis.position;
+
+            // Abaikan sumbu Y biar kamera nggak mendadak nyungsep atau terbang
+            arahGeser.y = 0;
+
+            // Setel offsetPan seolah-olah user menggeser kamera secara manual sejauh jarak tersebut
+            offsetPan = arahGeser;
         }
     }
 }

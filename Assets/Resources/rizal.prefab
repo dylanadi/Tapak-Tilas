@@ -178,6 +178,7 @@ MonoBehaviour:
   goyangAmount: 6
   yOffset: 0.5
   indikatorMilik: {fileID: 483675038047157445, guid: c7122e23e68562d48a6c5500041e9104, type: 3}
+  currentNode: {fileID: 0}
 --- !u!114 &2467497383548461418
 MonoBehaviour:
   m_ObjectHideFlags: 0

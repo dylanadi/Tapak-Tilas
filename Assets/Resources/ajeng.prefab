@@ -178,6 +178,7 @@ MonoBehaviour:
   goyangAmount: 6
   yOffset: 0.5
   indikatorMilik: {fileID: 0}
+  currentNode: {fileID: 0}
 --- !u!114 &3601584070300285711
 MonoBehaviour:
   m_ObjectHideFlags: 0

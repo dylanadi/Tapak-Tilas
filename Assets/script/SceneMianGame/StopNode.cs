@@ -4,8 +4,9 @@ using System.Collections.Generic;
 public class StopNode : MonoBehaviour
 {
     public int nodeID;
-    public InteractableObject.ObjectType jenisNode;
-    
+    //public InteractableObject.ObjectType jenisNode;
+    public TipeObjek jenisNode;
+
     [Header("Kapasitas Petak")]
     [Tooltip("Berapa banyak player yang boleh berdiri di sini?")]
     public int capacity = 1;

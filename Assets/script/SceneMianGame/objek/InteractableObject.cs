@@ -5,17 +5,9 @@ using UnityEngine.EventSystems;
 
 public class InteractableObject : MonoBehaviour
 {
-    public enum ObjectType { Ketapang, Ijen, PulauMerah, Rajinan, Pasar, Hujan, Kharisma, Warisan }
-
-    [Header("Titik Jalur Garis")]
-    [Tooltip("ID Node yang posisinya TEPAT DI ATAS GARIS PINK (Pintu masuk/keluar)")]
-    public int nodeGarisID;
-
-    [Header("Daftar Petak Parkir")]
-    [Tooltip("ID Node parkiran yang posisinya di luar/samping garis")]
-    public int[] nodeParkirIDs;
-
-    public ObjectType jenisObjek;
+    [Header("ID Identitas Objek")]
+    [Tooltip("Isi angka 1 - 14. Semua data (Tipe, Node) diambil otomatis dari MapDatabase!")]
+    public int idObjek;
 
     [Header("Konten Popup")]
     [TextArea(3, 10)]
@@ -25,10 +17,16 @@ public class InteractableObject : MonoBehaviour
     public GameObject tanyaPrefab;
     public Vector3 tanyaOffset = new Vector3(0, 3.5f, 0);
 
+    // 🔥 Data ini disembunyikan karena otomatis diisi dari MapDatabase
+    [HideInInspector] public TipeObjek jenisObjek;
+    [HideInInspector] public int nodeGarisID;
+    [HideInInspector] public int[] nodeParkirIDs;
+
     private GameObject currentTanya;
     private Outline outline;
     private bool isSelected = false;
     private StopNode chosenParkirNode;
+    private bool dataSudahDiambil = false;
 
     void Start()
     {
@@ -42,11 +40,37 @@ public class InteractableObject : MonoBehaviour
             outline.OutlineWidth = 5f;
             outline.OutlineColor = Color.yellow;
         }
+
+        // Tunda ambil data sedikit biar MapDatabase selesai loading duluan
+        Invoke("AmbilDataDariDatabase", 0.5f);
+    }
+
+    void AmbilDataDariDatabase()
+    {
+        if (MapDatabase.Instance != null)
+        {
+            DataObjekMap dataKu = MapDatabase.Instance.AmbilData(idObjek);
+            if (dataKu != null)
+            {
+                // Ambil semua data penting dari Buku Induk
+                jenisObjek = dataKu.jenisObjek;
+                nodeGarisID = dataKu.nodeGarisID;
+                nodeParkirIDs = dataKu.nodeParkirIDs;
+
+                dataSudahDiambil = true;
+                Debug.Log($"[MapDatabase] Objek {gameObject.name} (ID: {idObjek} - {jenisObjek}) berhasil mengambil data!");
+            }
+            else
+            {
+                Debug.LogError($"[MapDatabase] ❌ ID Objek {idObjek} tidak ditemukan di Buku Induk!");
+            }
+        }
     }
 
     void OnMouseDown()
     {
-        // Blokir klik jika terhalang UI
+        // Cegah klik kalau data belum siap atau terhalang UI
+        if (!dataSudahDiambil) return;
         if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
 
         // Cari Player Lokal
@@ -56,19 +80,18 @@ public class InteractableObject : MonoBehaviour
         if (localPlayer == null) return;
 
         // 🔥 CEK ANTI PINDAH KURSI 🔥
-        // Mengecek apakah player sudah berada di node halte atau salah satu parkiran di objek ini
         GerakPion pionLokal = localPlayer.GetComponent<GerakPion>();
         if (pionLokal != null && pionLokal.currentNode != null)
         {
-            if (pionLokal.currentNode.nodeID == nodeGarisID || nodeParkirIDs.Contains(pionLokal.currentNode.nodeID))
+            if (pionLokal.currentNode.nodeID == nodeGarisID || (nodeParkirIDs != null && nodeParkirIDs.Contains(pionLokal.currentNode.nodeID)))
             {
                 Debug.LogWarning("[LALY-System] Kamu sudah berada di dalam objek ini!");
                 if (PopupManager.Instance != null) PopupManager.Instance.ShowPopup("Kamu sudah berada di sini!");
-                return; // Tolak kliknya!
+                return; // Tolak kliknya
             }
         }
 
-        // Cari parkiran yang kosong
+        // Cari parkiran kosong
         chosenParkirNode = CariParkiranKosong();
 
         if (chosenParkirNode == null)
@@ -77,7 +100,7 @@ public class InteractableObject : MonoBehaviour
             return;
         }
 
-        // Cek giliran
+        // Cek Giliran
         if (GameManager.Instance != null && !GameManager.Instance.IsMyTurn(localPlayer))
         {
             Debug.LogWarning("[LALY-System] Tunggu giliranmu!");
@@ -90,6 +113,8 @@ public class InteractableObject : MonoBehaviour
 
     StopNode CariParkiranKosong()
     {
+        if (nodeParkirIDs == null || nodeParkirIDs.Length == 0) return null;
+
         StopNode[] allNodes = FindObjectsOfType<StopNode>();
         foreach (int id in nodeParkirIDs)
         {
@@ -139,7 +164,7 @@ public class InteractableObject : MonoBehaviour
             }
             else
             {
-                Debug.LogError("Node Garis tidak ditemukan! Pastikan ID-nya benar.");
+                Debug.LogError($"Node Garis ID {nodeGarisID} tidak ditemukan! Pastikan ID-nya benar di MapDatabase.");
             }
         }
     }
@@ -148,6 +173,20 @@ public class InteractableObject : MonoBehaviour
     {
         InteractableObject[] allObjects = FindObjectsOfType<InteractableObject>();
         foreach (var obj in allObjects) if (obj != this) obj.DeselectObject();
+    }
+
+    // 🔥 FUNGSI TAMBAHAN UNTUK UI NANTINYA
+    public void TerpilihDariUI()
+    {
+        if (!isSelected) SelectObject();
+    }
+
+    public StopNode[] DapatkanSemuaNodeParkir()
+    {
+        if (nodeParkirIDs == null || nodeParkirIDs.Length == 0) return new StopNode[0];
+
+        StopNode[] allNodes = FindObjectsOfType<StopNode>();
+        return allNodes.Where(n => nodeParkirIDs.Contains(n.nodeID)).ToArray();
     }
 }
 
