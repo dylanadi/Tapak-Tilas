@@ -176,13 +176,16 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     void RPC_NextTurn()
     {
-        PlayerData pemainSelesai = allPlayers[currentTurnIndex];
+        // Pastikan list belum kosong dan player tidak null
+        if (allPlayers.Count > 0 && allPlayers[currentTurnIndex] != null)
+        {
+            PlayerData pemainSelesai = allPlayers[currentTurnIndex];
+            Debug.Log("[GM] Player selesai: " + pemainSelesai.playerName);
 
-        Debug.Log("[GM] Player selesai: " + pemainSelesai.playerName);
-
-        // pindah ke belakang
-        allPlayers.RemoveAt(currentTurnIndex);
-        allPlayers.Add(pemainSelesai);
+            // pindah ke belakang
+            allPlayers.RemoveAt(currentTurnIndex);
+            allPlayers.Add(pemainSelesai);
+        }
 
         currentTurnIndex = 0;
 
@@ -228,8 +231,80 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         for (int i = 0; i < allPlayers.Count; i++)
         {
-            string status = (i == 0) ? " <-- GILIRAN" : "";
-            Debug.Log(i + " : " + allPlayers[i].playerName + status);
+            // Amankan debug kalau ada objek null pas disconnect
+            if (allPlayers[i] != null)
+            {
+                string status = (i == 0) ? " <-- GILIRAN" : "";
+                Debug.Log(i + " : " + allPlayers[i].playerName + status);
+            }
+        }
+    }
+
+    // ==========================================
+    // 🔥 SISTEM ANTI-NYANGKUT & HOST MIGRATION
+    // ==========================================
+
+    // 1. TERPANGGIL KALAU KITA SENDIRI YANG PUTUS KONEKSI
+    public override void OnDisconnected(DisconnectCause cause)
+    {
+        Debug.LogError($"[GM] Koneksi terputus! Penyebab: {cause}");
+        // Memaksa balik ke menu utama biar game tidak freeze (Pastikan nama Scene menu sesuai)
+        UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
+    }
+
+    // 2. TERPANGGIL KALAU ADA PLAYER LAIN YANG KELUAR/PUTUS
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        Debug.LogWarning($"[GM] Player {otherPlayer.NickName} keluar dari room!");
+
+        if (!turnSystemReady) return;
+
+        // Kita jalankan Coroutine agar menunggu 1 frame.
+        // Alasan: Kita memberi waktu pada Photon untuk menghancurkan (Destroy) objek milik player yang keluar tadi.
+        StartCoroutine(CleanUpMissingPlayers());
+    }
+
+    IEnumerator CleanUpMissingPlayers()
+    {
+        yield return new WaitForEndOfFrame();
+
+        // Cek apakah player yang sedang giliran (index 0) tiba-tiba jadi null/hancur
+        bool isCurrentTurnMissing = (allPlayers.Count > 0 && (allPlayers[0] == null || allPlayers[0].photonView == null));
+
+        // Hapus semua data yang null/hancur dari list turn
+        int removedCount = allPlayers.RemoveAll(p => p == null || p.photonView == null);
+
+        if (removedCount > 0)
+        {
+            Debug.Log($"[GM] {removedCount} player dihapus dari daftar giliran.");
+
+            if (allPlayers.Count > 0)
+            {
+                if (isCurrentTurnMissing)
+                {
+                    Debug.Log("[GM] Giliran otomatis berlanjut ke player berikutnya karena player sebelumnya keluar.");
+                }
+
+                // Refresh UI agar giliran langsung update ke orang selanjutnya
+                currentTurnIndex = 0;
+                UpdateUI();
+                DebugTurn();
+            }
+            else
+            {
+                Debug.LogWarning("[GM] Semua player telah keluar dari room.");
+            }
+        }
+    }
+
+    // 3. TERPANGGIL KALAU HOST LAMA KELUAR & TAHTA PINDAH KE HOST BARU
+    public override void OnMasterClientSwitched(Player newMasterClient)
+    {
+        Debug.LogWarning($"[GM] Host lama keluar! Tahta Host sekarang dipegang oleh: {newMasterClient.NickName}");
+
+        if (PhotonNetwork.LocalPlayer == newMasterClient)
+        {
+            Debug.Log("[GM] KITA ADALAH HOST BARU! Mengambil alih kendali Room...");
         }
     }
 }

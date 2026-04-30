@@ -26,7 +26,10 @@ public class GerakPion : MonoBehaviourPun
 
     private List<Vector3> pathPoints = new List<Vector3>();
     private bool sedangGerak = false;
-    private StopNode currentNode;
+
+    // 🔥 DIUBAH JADI PUBLIC agar bisa dicek dari luar (Anti Pindah Kursi)
+    public StopNode currentNode;
+
     private PlayerData playerData;
 
     void Start()
@@ -50,14 +53,13 @@ public class GerakPion : MonoBehaviourPun
         }
     }
 
-    // 🔥 INI FIX ERROR CS7036: Menyelamatkan script lama (seperti NodeSelector.cs) yang cuma ngirim 1 Node
+    // Kompatibilitas untuk script lama yang cuma ngirim 1 Node
     public void MoveToNode(StopNode targetTunggal)
     {
-        // Otomatis menganggap Node Garis dan Node Parkir adalah node yang sama
         MoveToNode(targetTunggal, targetTunggal);
     }
 
-    // Menerima Titik Garis & Titik Parkir (Sistem Baru)
+    // Menerima Titik Garis & Titik Parkir
     public void MoveToNode(StopNode nodeGaris, StopNode nodeParkir)
     {
         if (!photonView.IsMine) return;
@@ -97,7 +99,7 @@ public class GerakPion : MonoBehaviourPun
 
         int step = (exitIndex > startIndex) ? 1 : -1;
 
-        // 1. NAIK KE GARIS PINK DULU (Keluar dari parkiran lama)
+        // 1. NAIK KE GARIS PINK DULU
         Vector3 titikMasukGaris = pathPoints[startIndex];
         while (Vector3.Distance(transform.position, titikMasukGaris) > 0.05f)
         {
@@ -184,4 +186,16 @@ public class GerakPion : MonoBehaviourPun
     }
 
     void HandleNodeEvent(StopNode node) { /* Event biasa */ }
+
+    // ==========================================
+    // 🔥 PEMBERSIH OTOMATIS SAAT DISCONNECT
+    // ==========================================
+    void OnDestroy()
+    {
+        if (currentNode != null)
+        {
+            currentNode.RemovePlayer(gameObject);
+            Debug.Log($"[LALY-System] Pion hancur/keluar. Petak Node {currentNode.nodeID} kembali KOSONG!");
+        }
+    }
 }

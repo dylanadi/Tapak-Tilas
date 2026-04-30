@@ -46,7 +46,27 @@ public class InteractableObject : MonoBehaviour
 
     void OnMouseDown()
     {
+        // Blokir klik jika terhalang UI
         if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
+
+        // Cari Player Lokal
+        PlayerData localPlayer = FindObjectsOfType<PlayerData>()
+            .FirstOrDefault(p => p.photonView != null && p.photonView.IsMine);
+
+        if (localPlayer == null) return;
+
+        // 🔥 CEK ANTI PINDAH KURSI 🔥
+        // Mengecek apakah player sudah berada di node halte atau salah satu parkiran di objek ini
+        GerakPion pionLokal = localPlayer.GetComponent<GerakPion>();
+        if (pionLokal != null && pionLokal.currentNode != null)
+        {
+            if (pionLokal.currentNode.nodeID == nodeGarisID || nodeParkirIDs.Contains(pionLokal.currentNode.nodeID))
+            {
+                Debug.LogWarning("[LALY-System] Kamu sudah berada di dalam objek ini!");
+                if (PopupManager.Instance != null) PopupManager.Instance.ShowPopup("Kamu sudah berada di sini!");
+                return; // Tolak kliknya!
+            }
+        }
 
         // Cari parkiran yang kosong
         chosenParkirNode = CariParkiranKosong();
@@ -57,11 +77,7 @@ public class InteractableObject : MonoBehaviour
             return;
         }
 
-        PlayerData localPlayer = FindObjectsOfType<PlayerData>()
-            .FirstOrDefault(p => p.photonView != null && p.photonView.IsMine);
-
-        if (localPlayer == null) return;
-
+        // Cek giliran
         if (GameManager.Instance != null && !GameManager.Instance.IsMyTurn(localPlayer))
         {
             Debug.LogWarning("[LALY-System] Tunggu giliranmu!");
@@ -118,7 +134,6 @@ public class InteractableObject : MonoBehaviour
 
             if (nodeGaris != null)
             {
-                // Kasih tahu Pion: "Lewat garis ini dulu, baru belok ke parkiran itu"
                 pion.MoveToNode(nodeGaris, chosenParkirNode);
                 DeselectObject();
             }
@@ -136,6 +151,7 @@ public class InteractableObject : MonoBehaviour
     }
 }
 
+// --- Class Terpisah untuk Tanda Tanya ---
 public class TandaTanyaInteraction : MonoBehaviour
 {
     public string pesanPopup;

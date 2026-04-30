@@ -1705,7 +1705,7 @@ MonoBehaviour:
   - {fileID: 4078605683973536256, guid: b51a4e61cce41954d8e912527f940b37, type: 3}
   - {fileID: 3962327301410661973, guid: b73d7b38f4bc91849bc3c47a0e42daed, type: 3}
   spawnCenter: {fileID: 1698972397}
-  spawnRadius: 10
+  spawnRadius: 5
   minDistance: 2.5
   turnUI: {fileID: 1280063726}
 --- !u!114 &750161204
@@ -8438,7 +8438,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1280063725
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8456,7 +8456,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: -103, y: 0}
-  m_SizeDelta: {x: 200, y: -950.39844}
+  m_SizeDelta: {x: 200, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1280063726
 MonoBehaviour:
