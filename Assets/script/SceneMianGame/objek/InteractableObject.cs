@@ -1,42 +1,40 @@
 ﻿using UnityEngine;
 using Photon.Pun;
 using System.Linq;
+using UnityEngine.EventSystems;
 
 public class InteractableObject : MonoBehaviour
 {
-    public enum ObjectType 
-    { 
-        Ketapang, 
-        Ijen, 
-        PulauMerah, 
-        Rajinan, 
-        Pasar, 
-        Hujan, 
-        Kharisma, 
-        Warisan 
-    }
+    public enum ObjectType { Ketapang, Ijen, PulauMerah, Rajinan, Pasar, Hujan, Kharisma, Warisan }
 
-    [Header("Konfigurasi Node")]
-    public int targetNodeID; 
+    [Header("Titik Jalur Garis")]
+    [Tooltip("ID Node yang posisinya TEPAT DI ATAS GARIS PINK (Pintu masuk/keluar)")]
+    public int nodeGarisID;
+
+    [Header("Daftar Petak Parkir")]
+    [Tooltip("ID Node parkiran yang posisinya di luar/samping garis")]
+    public int[] nodeParkirIDs;
+
     public ObjectType jenisObjek;
 
     [Header("Konten Popup")]
     [TextArea(3, 10)]
-    public string infoText; 
+    public string infoText;
 
     [Header("Visual & Prefab")]
-    public GameObject tanyaPrefab; 
-    public Vector3 tanyaOffset = new Vector3(0, 3.5f, 0); 
+    public GameObject tanyaPrefab;
+    public Vector3 tanyaOffset = new Vector3(0, 3.5f, 0);
 
     private GameObject currentTanya;
     private Outline outline;
     private bool isSelected = false;
+    private StopNode chosenParkirNode;
 
     void Start()
     {
         outline = GetComponent<Outline>();
         if (outline == null) outline = gameObject.AddComponent<Outline>();
-        
+
         if (outline != null)
         {
             outline.enabled = false;
@@ -48,7 +46,16 @@ public class InteractableObject : MonoBehaviour
 
     void OnMouseDown()
     {
-        Debug.Log($"[GM-Interact] Klik pada Objek: {gameObject.name}");
+        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
+
+        // Cari parkiran yang kosong
+        chosenParkirNode = CariParkiranKosong();
+
+        if (chosenParkirNode == null)
+        {
+            Debug.LogWarning($"<color=red>[LALY-System] Semua parkiran di {gameObject.name} sudah FULL!</color>");
+            return;
+        }
 
         PlayerData localPlayer = FindObjectsOfType<PlayerData>()
             .FirstOrDefault(p => p.photonView != null && p.photonView.IsMine);
@@ -57,12 +64,23 @@ public class InteractableObject : MonoBehaviour
 
         if (GameManager.Instance != null && !GameManager.Instance.IsMyTurn(localPlayer))
         {
-            Debug.LogWarning("[GM-Interact] Klik ditolak: Bukan giliranmu!");
+            Debug.LogWarning("[LALY-System] Tunggu giliranmu!");
             return;
         }
 
         if (!isSelected) SelectObject();
         else ExecuteMovement(localPlayer);
+    }
+
+    StopNode CariParkiranKosong()
+    {
+        StopNode[] allNodes = FindObjectsOfType<StopNode>();
+        foreach (int id in nodeParkirIDs)
+        {
+            StopNode node = allNodes.FirstOrDefault(n => n.nodeID == id);
+            if (node != null && !node.IsFull()) return node;
+        }
+        return null;
     }
 
     void SelectObject()
@@ -74,20 +92,12 @@ public class InteractableObject : MonoBehaviour
         if (currentTanya == null && tanyaPrefab != null)
         {
             Vector3 spawnPos = transform.position + tanyaOffset;
-            
-            // 🔥 FIX SCALE: Spawn tanpa parent dulu biar scale gak rusak
             currentTanya = Instantiate(tanyaPrefab, spawnPos, Quaternion.identity);
-            
-            // 🔥 Paksa scale balik ke ukuran asli (1,1,1)
             currentTanya.transform.localScale = Vector3.one;
-            
-            // 🔥 Baru masukkan ke dalam parent (objek map)
             currentTanya.transform.SetParent(transform);
-            
+
             TandaTanyaInteraction ttInteraction = currentTanya.AddComponent<TandaTanyaInteraction>();
             ttInteraction.pesanPopup = infoText;
-            
-            Debug.Log("[GM-Interact] Tanda tanya muncul dengan skala normal!");
         }
     }
 
@@ -101,12 +111,21 @@ public class InteractableObject : MonoBehaviour
     void ExecuteMovement(PlayerData pData)
     {
         GerakPion pion = pData.GetComponent<GerakPion>();
-        StopNode targetNode = FindObjectsOfType<StopNode>().FirstOrDefault(n => n.nodeID == targetNodeID);
 
-        if (pion != null && targetNode != null)
+        if (pion != null && chosenParkirNode != null)
         {
-            pion.MoveToNode(targetNode);
-            DeselectObject();
+            StopNode nodeGaris = FindObjectsOfType<StopNode>().FirstOrDefault(n => n.nodeID == nodeGarisID);
+
+            if (nodeGaris != null)
+            {
+                // Kasih tahu Pion: "Lewat garis ini dulu, baru belok ke parkiran itu"
+                pion.MoveToNode(nodeGaris, chosenParkirNode);
+                DeselectObject();
+            }
+            else
+            {
+                Debug.LogError("Node Garis tidak ditemukan! Pastikan ID-nya benar.");
+            }
         }
     }
 
@@ -123,10 +142,8 @@ public class TandaTanyaInteraction : MonoBehaviour
 
     void OnMouseDown()
     {
-        if (PopupManager.Instance != null)
-        {
-            PopupManager.Instance.ShowPopup(pesanPopup);
-        }
+        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
+        if (PopupManager.Instance != null) PopupManager.Instance.ShowPopup(pesanPopup);
     }
 
     void Update()

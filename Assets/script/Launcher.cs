@@ -36,12 +36,13 @@ public class Launcher : MonoBehaviourPunCallbacks
     private float velocity = 0f;
 
     private string[] funFacts = {
-        "Kawah Ijen punya blue fire langka!",
-        "Banyuwangi = Sunrise of Java 🌅",
-        "Alas Purwo termasuk hutan tertua!",
-        "Pantai Banyuwangi panjang banget!",
-        "Tari Gandrung = rasa syukur panen",
-        "Sego Tempong = pedasnya nampol!"
+        "Tahu gak sih? Banyuwangi ternyata kabupaten terluas di Pulau Jawa, lho! Luasnya bahkan mengalahkan luas Pulau Bali",
+        "Tahu gak sih? Banyuwangi ternyata dijuluki The Sunrise of Java. Ini karena Banyuwangi adalah wilayah pertama di Pulau Jawa yang melihat matahari terbit.",
+        "Tahu gak? Alas Purwo itu termasuk hutan tertua!",
+        "Banyuwangi ternyata punya fenomena api biru (blue fire) yang cuma ada dua di dunia, yaitu di kawah Ijen",
+        "Nama \"Banyuwangi\" ternyata berasal dari legenda Sritanjung Sidopekso, di mana air sungai yang tercemar bau busuk berubah menjadi wangi setelah difitnah",
+        "Ada suatu tempat di banyuwangi yang isinya 1000 patung gandrung loh, tepatnya di Taman gandrung terakota",
+        "Banyuwangi ternyata pernah dikenal sebagai pusat klenik/santet, namun kini bertransformasi total menjadi salah satu kabupaten paling maju di Indonesia"
     };
 
     void Start()
