@@ -1,0 +1,11 @@
+Model Information:
+* title:	Picnic Wooden Table
+* source:	https://sketchfab.com/3d-models/picnic-wooden-table-1407a0c57bbc44d9ac4e76372a9b7611
+* author:	SabasGT (https://sketchfab.com/sabasgme)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Picnic Wooden Table" (https://sketchfab.com/3d-models/picnic-wooden-table-1407a0c57bbc44d9ac4e76372a9b7611) by SabasGT (https://sketchfab.com/sabasgme) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

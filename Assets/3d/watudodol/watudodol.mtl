@@ -1,0 +1,42 @@
+# Blender 4.5.2 LTS MTL File: 'None'
+# www.blender.org
+
+newmtl Material.001
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd C:/Users/ASUS/OneDrive/Documents/pmerah3dddddddddneww/watudodol/wadtudodolasli/ImphenziaPalette01.png
+
+newmtl Material.002
+Ns 0.000000
+Ka 0.898246 0.898246 0.898246
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+map_Kd C:/Users/ASUS/Downloads/Meshy_AI_Crowned_Empress_with__0408053233_texture_fbx/Meshy_AI_Crowned_Empress_with__0408053233_texture_fbx/Meshy_AI_Crowned_Empress_with__0408053233_texture.png
+
+newmtl Material.003
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd C:/Users/ASUS/OneDrive/Documents/pmerah3dddddddddneww/watudodol/wadtudodolasli/ImphenziaPalette01.png
+
+newmtl TerrainSolid
+Ns 0.000000
+Ka 0.852632 0.852632 0.852632
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd C:/Users/ASUS/OneDrive/Documents/pmerah3dddddddddneww/watudodol/wadtudodolasli/ImphenziaPalette01.png
