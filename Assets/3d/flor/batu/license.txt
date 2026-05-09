@@ -1,0 +1,11 @@
+Model Information:
+* title:	Stone Floor
+* source:	https://sketchfab.com/3d-models/stone-floor-945d60fd01874c029a1e0cdef1184995
+* author:	4Engine (https://sketchfab.com/4Engine)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Stone Floor" (https://sketchfab.com/3d-models/stone-floor-945d60fd01874c029a1e0cdef1184995) by 4Engine (https://sketchfab.com/4Engine) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
