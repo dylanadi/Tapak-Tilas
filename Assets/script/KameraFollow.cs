@@ -15,7 +15,7 @@ public class KameraFollow : MonoBehaviour
 
     [Header("Zoom Settings")]
     public float zoomMin = 5f;
-    public float zoomMax = 40f;
+    public float zoomMax = 50f; // Bisa disesuaikan kalau objek terbesarmu butuh lebih dari 40
     public float tinggiSekarang = 15f;
     [Tooltip("Kamera akan otomatis Lerp ke angka ini saat karakter berjalan")]
     public float tinggiSaatJalan = 13.6f;
@@ -25,10 +25,12 @@ public class KameraFollow : MonoBehaviour
 
     [Header("Transisi Fokus (Auto-Lock)")]
     public float kecepatanFokus = 10f;
+    public bool kameraAktif;
 
     private Vector3 offsetPan = Vector3.zero;
     private Vector3 lastTargetPos;
     private Transform targetOtomatis;
+
 
     void Awake()
     {
@@ -44,6 +46,7 @@ public class KameraFollow : MonoBehaviour
         // Langsung cari target pas awal game
         UpdateTarget();
         if (targetOtomatis) lastTargetPos = targetOtomatis.position;
+        kameraAktif = true;
     }
 
     void Update()
@@ -53,36 +56,39 @@ public class KameraFollow : MonoBehaviour
 
         if (!targetOtomatis) return;
 
-        // 1. INPUT ZOOM MANUAL
-        float scroll = Input.GetAxis("Mouse ScrollWheel");
-        if (Mathf.Abs(scroll) > 0.01f)
+        if (kameraAktif)
         {
-            tinggiSekarang -= scroll * 12f;
-        }
+            // 1. INPUT ZOOM MANUAL
+            float scroll = Input.GetAxis("Mouse ScrollWheel");
+            if (Mathf.Abs(scroll) > 0.01f)
+            {
+                tinggiSekarang -= scroll * 12f;
+            }
 
-        // 2. LOGIKA AUTO-ZOOM & AUTO-FOLLOW (PAS JALAN)
-        if (Vector3.Distance(targetOtomatis.position, lastTargetPos) > 0.01f)
-        {
-            // Lerp ketinggian ke 13.6 secara halus saat bergerak
-            tinggiSekarang = Mathf.Lerp(tinggiSekarang, tinggiSaatJalan, Time.deltaTime * kecepatanFokus);
+            // 2. LOGIKA AUTO-ZOOM & AUTO-FOLLOW (PAS JALAN)
+            if (Vector3.Distance(targetOtomatis.position, lastTargetPos) > 0.01f)
+            {
+                // Lerp ketinggian ke 13.6 secara halus saat bergerak
+                tinggiSekarang = Mathf.Lerp(tinggiSekarang, tinggiSaatJalan, Time.deltaTime * kecepatanFokus);
 
-            // Reset geseran manual agar kamera kembali mengunci ke tengah karakter
-            offsetPan = Vector3.Lerp(offsetPan, Vector3.zero, Time.deltaTime * kecepatanFokus);
-        }
+                // Reset geseran manual agar kamera kembali mengunci ke tengah karakter
+                offsetPan = Vector3.Lerp(offsetPan, Vector3.zero, Time.deltaTime * kecepatanFokus);
+            }
 
-        tinggiSekarang = Mathf.Clamp(tinggiSekarang, zoomMin, zoomMax);
-        float zoomPercent = (tinggiSekarang - zoomMin) / (zoomMax - zoomMin);
+            tinggiSekarang = Mathf.Clamp(tinggiSekarang, zoomMin, zoomMax);
+            float zoomPercent = (tinggiSekarang - zoomMin) / (zoomMax - zoomMin);
 
-        // 3. INPUT GESER MANUAL (Klik Kanan)
-        if (Input.GetMouseButton(1))
-        {
-            float moveX = Input.GetAxis("Mouse X") * panSensitivity;
-            float moveZ = Input.GetAxis("Mouse Y") * panSensitivity;
+            // 3. INPUT GESER MANUAL (Klik Kanan)
+            if (Input.GetMouseButton(1))
+            {
+                float moveX = Input.GetAxis("Mouse X") * panSensitivity;
+                float moveZ = Input.GetAxis("Mouse Y") * panSensitivity;
 
-            Vector3 inputMouse = new Vector3(moveX, 0, moveZ);
-            Vector3 inputDisesuaikan = Quaternion.Euler(0, rotasiHorizontal, 0) * inputMouse;
+                Vector3 inputMouse = new Vector3(moveX, 0, moveZ);
+                Vector3 inputDisesuaikan = Quaternion.Euler(0, rotasiHorizontal, 0) * inputMouse;
 
-            offsetPan -= inputDisesuaikan * (1f + zoomPercent * 2f);
+                offsetPan -= inputDisesuaikan * (1f + zoomPercent * 2f);
+            }
         }
 
         lastTargetPos = targetOtomatis.position;
@@ -134,10 +140,15 @@ public class KameraFollow : MonoBehaviour
     // ==========================================
     // 🔥 FUNGSI BARU UNTUK UI NAVIGASI BAWAH
     // ==========================================
-    public void FokusKePosisi(Vector3 posisiTujuanFokus)
+
+    // UPDATE: Sekarang menerima 'tinggiTarget' dari UIGenerator
+    public void FokusKePosisi(Vector3 posisiTujuanFokus, float tinggiTarget)
     {
         if (targetOtomatis != null)
         {
+            // 🔥 Setel ketinggian kamera sesuai settingan objek di database
+            tinggiSekarang = tinggiTarget;
+
             // Hitung selisih jarak dari target saat ini (player) ke titik Objek Map (Pasar/Patung/dll)
             Vector3 arahGeser = posisiTujuanFokus - targetOtomatis.position;
 

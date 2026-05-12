@@ -16,6 +16,9 @@ public class DataObjekMap
     public int nodeGarisID;          // ID Pintu Garis (Halte)
     public int[] nodeParkirIDs;      // ID Petak Parkir
 
+    [Header("Setting Kamera")]
+    public float tinggiKamera = 15f;
+
     [Header("Data UI (Untuk Nanti)")]
     public Sprite iconUI;            // Gambar icon disiapin aja dulu
 }
