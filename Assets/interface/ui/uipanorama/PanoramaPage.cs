@@ -16,6 +16,18 @@ public class PanoramaPage : MonoBehaviour
 
     public void UpdateSprite(int dir)
     {
+        Debug.Log("book: " + book.currentPage + " dir: " + dir);
         StartCoroutine(book.UpdateSprites2(book.currentPage, dir));
+    }
+
+    public void FixSprite(int dir)
+    {
+        Debug.Log("book2: " + book.currentPage + " dir2: " + dir);
+        book.FixSprite();
+    }
+
+    public void FixBtn()
+    {
+        book.FixBtn();
     }
 }

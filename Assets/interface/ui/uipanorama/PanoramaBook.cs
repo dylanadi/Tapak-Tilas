@@ -35,13 +35,14 @@ public class PanoramaBook : MonoBehaviour
 
     public void GoToPage(int targetPage)
     {
-        if(currentPage != targetPage)
+        if (currentPage != targetPage)
         {
             target = targetPage;
-            if(currentPage > targetPage)
+            if (currentPage > targetPage)
             {
                 PrevPage();
-            } else if(currentPage < target)
+            }
+            else if (currentPage < target)
             {
                 NextPage();
             }
@@ -59,32 +60,48 @@ public class PanoramaBook : MonoBehaviour
 
     public IEnumerator TurnPage(int dir)
     {
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(0.001f);
+        //  pageAnim[0].GetComponent<Animator>().speed = 1f;
+        // pageAnim[1].GetComponent<Animator>().speed = 1f;
         isMoving = true;
         UpdateSprites(currentPage);
         // Pilih animator berdasarkan arah (0 = Prev, 1 = Next)
         int animIndex = (dir == 1) ? 0 : 1;
         string animName = (dir == 1) ? "TurnRight" : "TurnLeft";
+        string animName2 = (dir == 1) ? "Idle1" : "Idle2";
 
         Animator anim = pageAnim[animIndex].GetComponent<Animator>();
         Canvas canvas = pageAnim[animIndex].GetComponent<Canvas>();
+        
 
         canvas.sortingOrder = 2;
         anim.Play(animName);
 
         // Tunggu animasi selesai (sesuaikan dengan durasi animasi kamu)
-        yield return new WaitForSeconds(0.49f);
+        yield return new WaitForSeconds(0.5f);
+        // pageAnim[animIndex].SetActive(false);0.
+
+
+
+
 
         // Update gambar SETELAH/SAAT animasi berjalan agar pergantian halus
 
         canvas.sortingOrder = 1;
+        // pageAnim[0].GetComponent<Animator>().speed = 0f;
+        // pageAnim[1].GetComponent<Animator>().speed = 0f;
+        anim.Play(animName2);
         isMoving = false;
-        if(currentPage != target)
+        if (currentPage != target)
         {
             Debug.Log("aaa" + target);
             GoToPage(target);
         }
-        
+        // yield return new WaitForSeconds(0.01f);
+        // pageAnim[animIndex].SetActive(true);
+         
+
+
     }
 
     // Fungsi khusus untuk mengganti sprite berdasarkan halaman
@@ -113,7 +130,7 @@ public class PanoramaBook : MonoBehaviour
 
     public IEnumerator UpdateSprites2(int page, int dir)
     {
-       
+
         Sprite[] selectedPanorama;
 
 
@@ -128,7 +145,7 @@ public class PanoramaBook : MonoBehaviour
 
         if (dir == 1)
         {
-             pageBtn[0].SetActive(false);
+            pageBtn[0].SetActive(false);
             gambarAnim[0].sprite = selectedPanorama[3];
             gambarAnim[1].sprite = selectedPanorama[2];
             gambarAnim[0].rectTransform.localScale = new Vector3(1, 1, 1);
@@ -142,9 +159,20 @@ public class PanoramaBook : MonoBehaviour
             gambarAnim[3].sprite = selectedPanorama[0];
             gambarAnim[2].sprite = selectedPanorama[1];
         }
-
         yield return new WaitForSeconds(0.25f);
 
+        FixfixSprite(selectedPanorama);
+
+
+    }
+
+    public void FixBtn()
+    {
+        pageBtn[1].SetActive(false);
+    }
+
+      public void FixfixSprite(Sprite[] selectedPanorama)
+    {
         gambarAnim[0].rectTransform.localScale = new Vector3(-1, 1, 1);
         gambarAnim[1].rectTransform.localScale = new Vector3(-1, 1, 1);
         gambarAnim[2].rectTransform.localScale = new Vector3(1, 1, 1);
@@ -160,7 +188,18 @@ public class PanoramaBook : MonoBehaviour
         }
         pageBtn[1].SetActive(false);
         pageBtn[0].SetActive(true);
+
     }
+
+    public void FixSprite()
+    {
+        // pageAnim[0].GetComponent<Animator>().speed = 0f;
+        // pageAnim[1].GetComponent<Animator>().speed = 0f;
+        // pageAnim[0].GetComponent<RectTransform>().rotation = Quaternion.Euler(0, 0, 0);
+        // pageAnim[1].GetComponent<RectTransform>().rotation = Quaternion.Euler(0, 0, 0);
+    }
+
+  
 }
 
 
