@@ -1,0 +1,79 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5891905427787898143
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1785740697018337377}
+  - component: {fileID: 7428284533941831158}
+  m_Layer: 0
+  m_Name: PanoramaBook
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1785740697018337377
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5891905427787898143}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -23.036316, y: -324.97388, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7428284533941831158
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5891905427787898143}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6482e20e8fc6f3546a4bd3db1095500b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PanoramaBook
+  gambarUI:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  gambarAnim:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  panorama1:
+  - {fileID: 21300000, guid: 2201f47830e88234089426a2116d7b1e, type: 3}
+  - {fileID: 21300000, guid: ed6fe8398ae67fd439022e8269f6da98, type: 3}
+  - {fileID: 21300000, guid: 117e16cd7fa883c468cb243a1bd2e9f1, type: 3}
+  - {fileID: 21300000, guid: a90183295770ff541b1dcf225a83a267, type: 3}
+  panorama2:
+  - {fileID: 21300000, guid: 4b5b90066b8cefb49a6603d8748c367e, type: 3}
+  - {fileID: 21300000, guid: ddec9839b4c9402448e9f9f1f37d35a0, type: 3}
+  - {fileID: 21300000, guid: b33cb1c70b8f78b409ae13563bcab7ca, type: 3}
+  - {fileID: 21300000, guid: ccadbb223b557a14191142cc3609bee6, type: 3}
+  panorama3:
+  - {fileID: 21300000, guid: ae514167fedcf8e4a8e6e3b12e8df136, type: 3}
+  - {fileID: 21300000, guid: ff61e0897c402744ba31e14e079927cf, type: 3}
+  - {fileID: 21300000, guid: f7798d23df8768342b94a6013bb0cb8d, type: 3}
+  - {fileID: 21300000, guid: d793d7f13b4fe7643bf3b16c761b1524, type: 3}
+  pageAnim:
+  - {fileID: 0}
+  - {fileID: 0}
+  currentPage: 3
+  target: 1
+  pageBtn:
+  - {fileID: 0}
+  - {fileID: 0}
