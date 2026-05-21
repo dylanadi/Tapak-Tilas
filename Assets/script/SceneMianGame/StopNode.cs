@@ -3,9 +3,12 @@ using System.Collections.Generic;
 
 public class StopNode : MonoBehaviour
 {
-    public int nodeID;
-    //public InteractableObject.ObjectType jenisNode;
-    public TipeObjek jenisNode;
+    [Header("Identitas Petak")]
+    [Tooltip("ID urutan jalan untuk pergerakan player")]
+    public int nodeID; 
+    
+    [Tooltip("Isi dengan ID Objek dari MapDatabase. Biarkan 0 jika ini petak biasa.")]
+    public int idObjek; 
 
     [Header("Kapasitas Petak")]
     [Tooltip("Berapa banyak player yang boleh berdiri di sini?")]

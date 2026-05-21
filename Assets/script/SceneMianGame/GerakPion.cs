@@ -27,7 +27,7 @@ public class GerakPion : MonoBehaviourPun
     private List<Vector3> pathPoints = new List<Vector3>();
     private bool sedangGerak = false;
 
-    // 🔥 DIUBAH JADI PUBLIC agar bisa dicek dari luar (Anti Pindah Kursi)
+    // 🔥 PUBLIC: Agar bisa dicek dari luar (Anti Pindah Kursi)
     public StopNode currentNode;
 
     private PlayerData playerData;
@@ -152,7 +152,28 @@ public class GerakPion : MonoBehaviourPun
 
         HandleNodeEvent(nodeParkir);
 
-        if (photonView.IsMine && GameManager.Instance != null) GameManager.Instance.NextTurn();
+        // ========================================================
+        // 🔥 MULTIPLAYER LOKAL SYNC - HUBUNGAN MAP DATABASE TERPUSAT
+        // ========================================================
+        if (photonView.IsMine)
+        {
+            // Kirim nodeID dari petak parkir asli tempat pion mendarat saat ini
+            if (PetakManager.Instance != null)
+            {
+                PetakManager.Instance.EksekusiMekanikPetak(nodeParkir.nodeID);
+            }
+            else
+            {
+                Debug.LogWarning("[LALY-System] PetakManager tidak ditemukan di Scene!");
+            }
+
+            // Ganti giliran setelah membuka mekanik
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.NextTurn();
+            }
+        }
+        // ========================================================
 
         sedangGerak = false;
     }
@@ -188,7 +209,7 @@ public class GerakPion : MonoBehaviourPun
     void HandleNodeEvent(StopNode node) { /* Event biasa */ }
 
     // ==========================================
-    // 🔥 PEMBERSIH OTOMATIS SAAT DISCONNECT
+    // 🧹 PEMBERSIH OTOMATIS SAAT DISCONNECT
     // ==========================================
     void OnDestroy()
     {
