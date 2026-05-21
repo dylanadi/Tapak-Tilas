@@ -1,10 +1,14 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 
 public class BagUIManager : MonoBehaviour
 {
+    // 🔥 TAMBAHAN 1: Singleton (Biar UIRajinanManager bisa buka tas otomatis)
+    public static BagUIManager Instance;
+
     [Header("Referensi UI")]
     public RectTransform bagPanel;
+    public GameObject btnClose; // 🔥 TAMBAHAN 2: Slot untuk narik tombol silang (X) tas
 
     [Header("Setting Animasi")]
     public float durasiSlide = 0.4f;
@@ -15,10 +19,17 @@ public class BagUIManager : MonoBehaviour
     [Tooltip("Posisi X saat tas dibuka (misal: 0 atau 50)")]
     public float posisiX_Buka = 0f;
 
+    [HideInInspector]
+    public bool isBagOpen = false; // 🔥 Diubah jadi public biar script Rajinan bisa ngecek status tasnya
 
-
-    private bool isBagOpen = false;
     private Coroutine animasiCoroutine;
+
+    void Awake()
+    {
+        // Setup Instance pas game mulai
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
+    }
 
     void Start()
     {
@@ -64,17 +75,16 @@ public class BagUIManager : MonoBehaviour
         bagPanel.anchoredPosition = posTujuan;
     }
 
+    // (Opsional) Kamera manual disable/enable milikmu tetap dibiarkan aman di sini
     public KameraFollow kamera;
 
     public void DisableCamera()
     {
-
-        kamera.kameraAktif = false;
-
+        if (kamera != null) kamera.kameraAktif = false;
     }
 
     public void EnableCamera()
     {
-        kamera.kameraAktif = true;
+        if (kamera != null) kamera.kameraAktif = true;
     }
 }
