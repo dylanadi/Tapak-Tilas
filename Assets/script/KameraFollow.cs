@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.EventSystems; // 🔥 TAMBAHAN WAJIB UNTUK DETEKSI MOUSE DI UI
 
 public class KameraFollow : MonoBehaviour
 {
@@ -56,16 +57,26 @@ public class KameraFollow : MonoBehaviour
 
         if (!targetOtomatis) return;
 
+        // 🔥 DETEKSI APAKAH KURSOR MOUSE SEDANG BERADA DI ATAS UI
+        bool isMouseOverUI = false;
+        if (EventSystem.current != null)
+        {
+            isMouseOverUI = EventSystem.current.IsPointerOverGameObject();
+        }
+
         if (kameraAktif)
         {
-            // 1. INPUT ZOOM MANUAL
-            float scroll = Input.GetAxis("Mouse ScrollWheel");
-            if (Mathf.Abs(scroll) > 0.01f)
+            // 1. INPUT ZOOM MANUAL (🔥 DIBLOKIR KALAU MOUSE DI UI)
+            if (!isMouseOverUI)
             {
-                tinggiSekarang -= scroll * 12f;
+                float scroll = Input.GetAxis("Mouse ScrollWheel");
+                if (Mathf.Abs(scroll) > 0.01f)
+                {
+                    tinggiSekarang -= scroll * 12f;
+                }
             }
 
-            // 2. LOGIKA AUTO-ZOOM & AUTO-FOLLOW (PAS JALAN)
+            // 2. LOGIKA AUTO-ZOOM & AUTO-FOLLOW (PAS JALAN) - Ini tetap jalan bebas
             if (Vector3.Distance(targetOtomatis.position, lastTargetPos) > 0.01f)
             {
                 // Lerp ketinggian ke 13.6 secara halus saat bergerak
@@ -78,16 +89,19 @@ public class KameraFollow : MonoBehaviour
             tinggiSekarang = Mathf.Clamp(tinggiSekarang, zoomMin, zoomMax);
             float zoomPercent = (tinggiSekarang - zoomMin) / (zoomMax - zoomMin);
 
-            // 3. INPUT GESER MANUAL (Klik Kanan)
-            if (Input.GetMouseButton(1))
+            // 3. INPUT GESER MANUAL (Klik Kanan) (🔥 DIBLOKIR KALAU MOUSE DI UI)
+            if (!isMouseOverUI)
             {
-                float moveX = Input.GetAxis("Mouse X") * panSensitivity;
-                float moveZ = Input.GetAxis("Mouse Y") * panSensitivity;
+                if (Input.GetMouseButton(1))
+                {
+                    float moveX = Input.GetAxis("Mouse X") * panSensitivity;
+                    float moveZ = Input.GetAxis("Mouse Y") * panSensitivity;
 
-                Vector3 inputMouse = new Vector3(moveX, 0, moveZ);
-                Vector3 inputDisesuaikan = Quaternion.Euler(0, rotasiHorizontal, 0) * inputMouse;
+                    Vector3 inputMouse = new Vector3(moveX, 0, moveZ);
+                    Vector3 inputDisesuaikan = Quaternion.Euler(0, rotasiHorizontal, 0) * inputMouse;
 
-                offsetPan -= inputDisesuaikan * (1f + zoomPercent * 2f);
+                    offsetPan -= inputDisesuaikan * (1f + zoomPercent * 2f);
+                }
             }
         }
 

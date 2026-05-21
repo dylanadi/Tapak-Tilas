@@ -1,0 +1,326 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c0ec6009ee9214fa75c1ae7300c9a4, type: 3}
+  m_Name: BukuIndukKerajinan
+  m_EditorClassIdentifier: Assembly-CSharp::DatabaseKerajinan
+  databaseMaterial:
+  - namaMaterial: Bamboo
+    iconMaterial: {fileID: 21300000, guid: addcb01ca1396fe4b81a0e3ceaa9c7e7, type: 3}
+  - namaMaterial: Benang
+    iconMaterial: {fileID: 21300000, guid: d5e27ef59e856ca41ac2893c95a3d019, type: 3}
+  - namaMaterial: 'Benang Emas '
+    iconMaterial: {fileID: 21300000, guid: a6b6b07ff6ce48b45a11e2f4a5a88d39, type: 3}
+  - namaMaterial: Besi
+    iconMaterial: {fileID: 21300000, guid: 135e67b571d87904bbc0a60b9f18be12, type: 3}
+  - namaMaterial: Bulu Unggas
+    iconMaterial: {fileID: 21300000, guid: 9444cc79bfe229e4489e20d0747a6d7b, type: 3}
+  - namaMaterial: Bunga
+    iconMaterial: {fileID: 21300000, guid: a22327b803ce4324392c4f97104af13e, type: 3}
+  - namaMaterial: Canting
+    iconMaterial: {fileID: 21300000, guid: 9603f73060177b841a3b56697e81a621, type: 3}
+  - namaMaterial: Emas
+    iconMaterial: {fileID: 21300000, guid: 45c3edc6ef5c91643b6f215981d4e334, type: 3}
+  - namaMaterial: Kain
+    iconMaterial: {fileID: 21300000, guid: adc3a2fb9450eea4db50f7ce1777d666, type: 3}
+  - namaMaterial: Karet
+    iconMaterial: {fileID: 21300000, guid: ebc8f3bf0e4c40d4b95755dbf6858d7f, type: 3}
+  - namaMaterial: Kayu
+    iconMaterial: {fileID: 21300000, guid: b071e039154ea94408910de230ee58fb, type: 3}
+  - namaMaterial: Lilin
+    iconMaterial: {fileID: 21300000, guid: ee2a688e9cb94174880594ec2da9e571, type: 3}
+  - namaMaterial: Mutiara
+    iconMaterial: {fileID: 21300000, guid: 059c6f0894cfc51468b47920e4cfffde, type: 3}
+  - namaMaterial: Tanah Liat
+    iconMaterial: {fileID: 21300000, guid: 65ee05fd5fbef3f4cb1c6a186fd6f4bb, type: 3}
+  - namaMaterial: Tiram
+    iconMaterial: {fileID: 21300000, guid: a65d2709ee79cde4c91f7268a03bde69, type: 3}
+  - namaMaterial: Warna Biru
+    iconMaterial: {fileID: 21300000, guid: 1d0e235c788fd13488a2b3e509e22ed6, type: 3}
+  - namaMaterial: Warna Coklat
+    iconMaterial: {fileID: 21300000, guid: a755f37e8c769794c930f91477e25ec9, type: 3}
+  - namaMaterial: Warna Hijau
+    iconMaterial: {fileID: 21300000, guid: e857a0e1372e26c46bd970b4a286f719, type: 3}
+  - namaMaterial: Warna Hitam
+    iconMaterial: {fileID: 21300000, guid: e87fd1fd024d6fb40b737a9fafd4b605, type: 3}
+  - namaMaterial: Warna Jingga
+    iconMaterial: {fileID: 21300000, guid: 31f83e3f99f994246bee95c3b52fa825, type: 3}
+  - namaMaterial: Warna Kuning
+    iconMaterial: {fileID: 21300000, guid: 4c208dfec7fcf2c41b861852a145fd69, type: 3}
+  - namaMaterial: Warna Merah
+    iconMaterial: {fileID: 21300000, guid: 3dcbce0951e9de046a5046e2493b16d7, type: 3}
+  - namaMaterial: Warna Nila
+    iconMaterial: {fileID: 21300000, guid: dc0d54334e767bd48b88869d7c867ae6, type: 3}
+  - namaMaterial: Warna Putih
+    iconMaterial: {fileID: 21300000, guid: 015e7d7f8e833004dbf5810fc487b9fd, type: 3}
+  - namaMaterial: Warna Ungu
+    iconMaterial: {fileID: 21300000, guid: 895a6a5b84cfe4f42ba7fe1044e6c38a, type: 3}
+  - namaMaterial: Rotan
+    iconMaterial: {fileID: 21300000, guid: cc38c2c7e0132494cb9c2ce61ed29162, type: 3}
+  - namaMaterial: Batu
+    iconMaterial: {fileID: 21300000, guid: 2160cee973d6d724fbc6d0e9bc78c079, type: 3}
+  databaseKartu:
+  - namaKartu: Mahkota_Gandrung
+    gambarKartu: {fileID: 21300000, guid: cb1a0eb6100fdff46be6c7fe1e51fbcb, type: 3}
+    kharismaReward: 5
+    listBahan:
+    - idMaterial: 7
+      jumlahButuh: 2
+    - idMaterial: 4
+      jumlahButuh: 4
+    - idMaterial: 5
+      jumlahButuh: 2
+    - idMaterial: 21
+      jumlahButuh: 1
+  - namaKartu: Baju_Gandrung
+    gambarKartu: {fileID: 21300000, guid: cb9643c7704596742ac4793b3617d753, type: 3}
+    kharismaReward: 5
+    listBahan:
+    - idMaterial: 8
+      jumlahButuh: 2
+    - idMaterial: 17
+      jumlahButuh: 1
+    - idMaterial: 2
+      jumlahButuh: 1
+    - idMaterial: 7
+      jumlahButuh: 1
+  - namaKartu: Jarik_Gandrung
+    gambarKartu: {fileID: 21300000, guid: 3d711b20a1287214a87b3838ec11d11f, type: 3}
+    kharismaReward: 4
+    listBahan:
+    - idMaterial: 8
+      jumlahButuh: 3
+    - idMaterial: 2
+      jumlahButuh: 1
+    - idMaterial: 6
+      jumlahButuh: 1
+    - idMaterial: 11
+      jumlahButuh: 2
+  - namaKartu: Hiasan_Kepala_Adat_Pengantin_Wanita
+    gambarKartu: {fileID: 21300000, guid: 475fdffcea60c5f4ba8c7214ee0d7029, type: 3}
+    kharismaReward: 4
+    listBahan:
+    - idMaterial: 7
+      jumlahButuh: 1
+    - idMaterial: 12
+      jumlahButuh: 1
+    - idMaterial: 5
+      jumlahButuh: 4
+  - namaKartu: Baju_Adat_Pengantin_Wanita
+    gambarKartu: {fileID: 21300000, guid: fbe0ecee658ed904baea9062f1fd7dbf, type: 3}
+    kharismaReward: 5
+    listBahan:
+    - idMaterial: 8
+      jumlahButuh: 5
+    - idMaterial: 18
+      jumlahButuh: 2
+    - idMaterial: 2
+      jumlahButuh: 2
+    - idMaterial: 7
+      jumlahButuh: 1
+  - namaKartu: Jarik_Pengantin_Wanita
+    gambarKartu: {fileID: 21300000, guid: 865e7805740f6ca4d9d723234325f712, type: 3}
+    kharismaReward: 5
+    listBahan:
+    - idMaterial: 8
+      jumlahButuh: 2
+    - idMaterial: 2
+      jumlahButuh: 1
+    - idMaterial: 6
+      jumlahButuh: 1
+    - idMaterial: 11
+      jumlahButuh: 1
+  - namaKartu: Udeng_Pakaian_Adat_Pria
+    gambarKartu: {fileID: 21300000, guid: 505c4d2f103f68f43bc43ae629d758e0, type: 3}
+    kharismaReward: 4
+    listBahan:
+    - idMaterial: 8
+      jumlahButuh: 1
+    - idMaterial: 6
+      jumlahButuh: 1
+    - idMaterial: 11
+      jumlahButuh: 1
+  - namaKartu: Baju_Adat_Pria
+    gambarKartu: {fileID: 21300000, guid: 39c7284d4be98fa439b8f7dde976acf4, type: 3}
+    kharismaReward: 4
+    listBahan:
+    - idMaterial: 8
+      jumlahButuh: 2
+    - idMaterial: 17
+      jumlahButuh: 1
+    - idMaterial: 2
+      jumlahButuh: 1
+    - idMaterial: 7
+      jumlahButuh: 1
+  - namaKartu: Celana_Adat_Pria
+    gambarKartu: {fileID: 21300000, guid: ae0ae82e34ce7404db626ca037209f14, type: 3}
+    kharismaReward: 4
+    listBahan:
+    - idMaterial: 8
+      jumlahButuh: 2
+    - idMaterial: 18
+      jumlahButuh: 1
+    - idMaterial: 11
+      jumlahButuh: 1
+    - idMaterial: 6
+      jumlahButuh: 1
+  - namaKartu: Udeng_Pakaian_Pengantin_Pria
+    gambarKartu: {fileID: 21300000, guid: be284ed91a440424a8df4f498db222ad, type: 3}
+    kharismaReward: 6
+    listBahan:
+    - idMaterial: 8
+      jumlahButuh: 1
+    - idMaterial: 5
+      jumlahButuh: 1
+    - idMaterial: 7
+      jumlahButuh: 1
+    - idMaterial: 6
+      jumlahButuh: 1
+    - idMaterial: 11
+      jumlahButuh: 1
+  - namaKartu: Baju_Pakaian_Pengantin_Pria
+    gambarKartu: {fileID: 21300000, guid: 19420321a412f8e42be6f8adaea5536a, type: 3}
+    kharismaReward: 5
+    listBahan:
+    - idMaterial: 8
+      jumlahButuh: 2
+    - idMaterial: 18
+      jumlahButuh: 2
+    - idMaterial: 2
+      jumlahButuh: 1
+    - idMaterial: 5
+      jumlahButuh: 2
+  - namaKartu: Jarik_Pakaian_Pengantin_Pria
+    gambarKartu: {fileID: 21300000, guid: a40c014258fc733409e5b0aa36d5fa22, type: 3}
+    kharismaReward: 5
+    listBahan:
+    - idMaterial: 8
+      jumlahButuh: 2
+    - idMaterial: 2
+      jumlahButuh: 1
+    - idMaterial: 16
+      jumlahButuh: 2
+    - idMaterial: 6
+      jumlahButuh: 1
+    - idMaterial: 11
+      jumlahButuh: 2
+  - namaKartu: Keris
+    gambarKartu: {fileID: 21300000, guid: 0450800d7e43666498def8d3884cb4a6, type: 3}
+    kharismaReward: 3
+    listBahan:
+    - idMaterial: 10
+      jumlahButuh: 2
+    - idMaterial: 3
+      jumlahButuh: 1
+    - idMaterial: 5
+      jumlahButuh: 2
+  - namaKartu: Anyaman Gintangan
+    gambarKartu: {fileID: 21300000, guid: a34a8c19b921807448e0cd3ea63b2759, type: 3}
+    kharismaReward: 4
+    listBahan:
+    - idMaterial: 25
+      jumlahButuh: 1
+    - idMaterial: 0
+      jumlahButuh: 2
+  - namaKartu: Kendi
+    gambarKartu: {fileID: 21300000, guid: d8316cd29034b3d47b1aaef60fe0acd0, type: 3}
+    kharismaReward: 2
+    listBahan:
+    - idMaterial: 13
+      jumlahButuh: 2
+  - namaKartu: ' Cobek'
+    gambarKartu: {fileID: 21300000, guid: 944d208c7a8806b4e810dc508f1088fa, type: 3}
+    kharismaReward: 2
+    listBahan:
+    - idMaterial: 26
+      jumlahButuh: 3
+  - namaKartu: Mangkok Army
+    gambarKartu: {fileID: 21300000, guid: eab7f597cbf41f14d869880bd4c8d29f, type: 3}
+    kharismaReward: 3
+    listBahan:
+    - idMaterial: 3
+      jumlahButuh: 1
+    - idMaterial: 17
+      jumlahButuh: 1
+  - namaKartu: Topeng Barong
+    gambarKartu: {fileID: 21300000, guid: a2be20d868deeba469167b31110e77fb, type: 3}
+    kharismaReward: 7
+    listBahan:
+    - idMaterial: 10
+      jumlahButuh: 3
+    - idMaterial: 21
+      jumlahButuh: 3
+    - idMaterial: 18
+      jumlahButuh: 2
+    - idMaterial: 20
+      jumlahButuh: 2
+    - idMaterial: 17
+      jumlahButuh: 1
+    - idMaterial: 4
+      jumlahButuh: 4
+  - namaKartu: Batik Gendhongan
+    gambarKartu: {fileID: 21300000, guid: 59fdfa95c9f00234ba09108429595eb2, type: 3}
+    kharismaReward: 4
+    listBahan:
+    - idMaterial: 8
+      jumlahButuh: 1
+    - idMaterial: 16
+      jumlahButuh: 2
+    - idMaterial: 21
+      jumlahButuh: 1
+    - idMaterial: 6
+      jumlahButuh: 1
+    - idMaterial: 11
+      jumlahButuh: 3
+  - namaKartu: Batik Sembruk Cacing
+    gambarKartu: {fileID: 21300000, guid: 66460fc6ffd653647ae8f595f43ddbfe, type: 3}
+    kharismaReward: 7
+    listBahan:
+    - idMaterial: 8
+      jumlahButuh: 1
+    - idMaterial: 18
+      jumlahButuh: 3
+    - idMaterial: 23
+      jumlahButuh: 2
+    - idMaterial: 6
+      jumlahButuh: 1
+    - idMaterial: 11
+      jumlahButuh: 3
+  - namaKartu: Batik Kangkung Setingkes
+    gambarKartu: {fileID: 21300000, guid: 80323cc0949f4554787780a7c64aefb0, type: 3}
+    kharismaReward: 5
+    listBahan:
+    - idMaterial: 8
+      jumlahButuh: 1
+    - idMaterial: 17
+      jumlahButuh: 2
+    - idMaterial: 23
+      jumlahButuh: 1
+    - idMaterial: 6
+      jumlahButuh: 1
+    - idMaterial: 11
+      jumlahButuh: 3
+  - namaKartu: Batik Gadjah Oling
+    gambarKartu: {fileID: 21300000, guid: 1f313b9eb88fee744aa3faff918707ef, type: 3}
+    kharismaReward: 7
+    listBahan:
+    - idMaterial: 8
+      jumlahButuh: 1
+    - idMaterial: 18
+      jumlahButuh: 3
+    - idMaterial: 23
+      jumlahButuh: 2
+    - idMaterial: 21
+      jumlahButuh: 1
+    - idMaterial: 6
+      jumlahButuh: 1
+    - idMaterial: 11
+      jumlahButuh: 2

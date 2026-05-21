@@ -306,4 +306,19 @@ public class PanoramaBook : MonoBehaviour
         warna.a = (indexKepingan < batasTerbuka) ? 1f : 0f;
         img.color = warna;
     }
+
+    public KameraFollow kamera;
+
+    public void DisableCamera()
+    {
+
+        kamera.kameraAktif = false;
+
+    }
+
+    public void EnableCamera()
+    {
+        kamera.kameraAktif = true;
+    }
+
 }
