@@ -42,6 +42,8 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _BUILTIN_QueueControl: -1
+    - _BUILTIN_QueueOffset: 0
     - _DepthSample_Offset: 0.0088
     - _FoamScale: 1000
     - _FoamSpd: 0.063
@@ -50,11 +52,12 @@ Material:
     - _QueueOffset: 0
     - _foamDistance: 5
     m_Colors:
-    - _FoamColor: {r: 0.6839622, g: 0.8123526, b: 1, a: 1}
-    - _MainColor: {r: 0.6556604, g: 0.8137369, b: 1, a: 0}
+    - _FoamColor: {r: 0.68235296, g: 0.8117647, b: 1, a: 1}
+    - _Idk: {r: 0, g: 0, b: 0, a: 0}
+    - _MainColor: {r: 0.7929058, g: 0.511559, b: 0.29017356, a: 0.34509805}
     - _Scrollspd: {r: 0, g: 1, b: 0, a: 0}
     - _Sprite_tiling: {r: 0, g: 0, b: 0, a: 0}
-    - _Tiling: {r: 1, g: 2.32, b: 0, a: 0}
+    - _Tiling: {r: 5, g: 5, b: 0, a: 0}
     - _random_Seed: {r: 1, g: 20, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
