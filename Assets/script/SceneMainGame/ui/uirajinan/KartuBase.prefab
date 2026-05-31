@@ -28,15 +28,15 @@ RectTransform:
   m_GameObject: {fileID: 3939173091917096195}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2.0305789, y: 2.6454613, z: 1.0475}
+  m_LocalScale: {x: 0.7121911, y: 0.9278507, z: 0.36739284}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6974756820718102843}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 4, y: -11}
-  m_SizeDelta: {x: 135.0158, y: 137.17}
+  m_AnchoredPosition: {x: 1, y: -2}
+  m_SizeDelta: {x: 460.1291, y: 457.04}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1914488598250654096
 CanvasRenderer:
@@ -66,7 +66,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: ab3e5730b293b5d40b1a4c5a2d345845, type: 3}
+  m_Sprite: {fileID: 21300000, guid: cbd60c58bfdce5e48a285b6654b72f53, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -98,7 +98,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 0
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 0
   m_TargetDisplay: 0
 --- !u!1 &6377715322506977188
 GameObject:
@@ -113,7 +113,7 @@ GameObject:
   - component: {fileID: 4808012908567133273}
   - component: {fileID: 4636107395413955692}
   - component: {fileID: 7311555446632002611}
-  - component: {fileID: 3640938953576897102}
+  - component: {fileID: -3176122732484032934}
   m_Layer: 5
   m_Name: KartuBase
   m_TagString: Untagged
@@ -139,7 +139,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 249.403, y: 336.974}
+  m_SizeDelta: {x: 313, y: 414}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3241412707228483754
 CanvasRenderer:
@@ -255,27 +255,17 @@ MonoBehaviour:
     kharismaReward: 0
     listBahan: []
   bisaBeli: 0
---- !u!223 &3640938953576897102
-Canvas:
+--- !u!114 &-3176122732484032934
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6377715322506977188}
   m_Enabled: 1
-  serializedVersion: 3
-  m_RenderMode: 2
-  m_Camera: {fileID: 0}
-  m_PlaneDistance: 100
-  m_PixelPerfect: 0
-  m_ReceivesEvents: 1
-  m_OverrideSorting: 1
-  m_OverridePixelPerfect: 0
-  m_SortingBucketNormalizedSize: 0
-  m_VertexColorAlwaysGammaSpace: 0
-  m_UseReflectionProbes: 0
-  m_AdditionalShaderChannelsFlag: 0
-  m_UpdateRectTransformForStandalone: 0
-  m_SortingLayerID: 0
-  m_SortingOrder: 2
-  m_TargetDisplay: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3b21a81a5e99f74bb9d193cf910d014, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemTooltip
+  data: {fileID: 11400000, guid: 7c255f8d0b542e14b920cc3d62c3d92c, type: 2}
+  id: 0
